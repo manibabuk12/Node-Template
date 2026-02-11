@@ -1,0 +1,10 @@
+{
+  "leaveType": "String",
+  "status": "String",
+  "reason": "String",
+  "startDate": "Date",
+  "endDate": "Date",
+  "numberofDays": "Number",
+  "created": "Date",
+  "updated": "Date"
+}

@@ -1,0 +1,14 @@
+components:
+  schemas:
+    leaveInputSchema:
+      type: object
+      example:
+        leaveType: String
+        status: String
+        reason: String
+        startDate: Date
+        endDate: Date
+        numberofDays: Number
+        created: Date
+        updated: Date
+        Employee: Autorelatefield

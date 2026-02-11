@@ -1,0 +1,35 @@
+{
+  "patientName": "String",
+  "email": "String",
+  "password": "String",
+  "age": "Number",
+  "dateOFBirth": "String",
+  "weight": "Number",
+  "height": "String",
+  "address": "String",
+  "doctorId": {
+    "type": "ObjectId",
+    "ref": "Doctors"
+  },
+  "prescriptionId": {
+    "type": "ObjectId",
+    "ref": "Prescriptions"
+  },
+  "reportId": {
+    "type": "ObjectId",
+    "ref": "Reports"
+  },
+  
+  "created": "Date",
+  "updated": "Date",
+  "aadhar": "String",
+  "gender": "String",
+  "status": {
+    "type": "String",
+    "enum": [
+      "Active",
+      "inActive",
+      ""
+    ]
+  }
+}

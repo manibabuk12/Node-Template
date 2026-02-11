@@ -1,0 +1,23 @@
+{
+    "electionId": {
+        "type": "ObjectId",
+        "ref": "Election"
+        },
+    "voterId": {
+        "type": "ObjectId",
+        "ref": "Voter"
+        },
+    "candidateId": {
+        "type": "ObjectId",
+        "ref": "Candidate"
+        },
+    "partyId": {
+        "type": "ObjectId",
+        "ref": "Party"
+        },
+    "constituencyId": {
+        "type": "ObjectId",
+        "ref": "Constituency"
+        },
+    "votedAt":"Date"
+}

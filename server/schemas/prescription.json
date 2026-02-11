@@ -1,0 +1,15 @@
+{
+ 
+"patientId": {
+    "type": "ObjectId",
+    "ref": "Patients"
+  },
+"doctorId":  {
+    "type": "ObjectId",
+    "ref": "Doctors"
+  },
+"prescriptionDate": "string",
+"medications": [],
+"notes": "string",
+"followUpDate": "String"
+}

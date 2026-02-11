@@ -1,0 +1,19 @@
+{
+    "name":{
+        "type":"String",
+        "required":true
+    },
+    "age":{
+        "type":"Number",
+        "required":true
+    },
+    "isActive":"Boolean",
+    "partyId": {
+        "type": "ObjectId",
+        "ref": "Party"
+        },
+    "constituencyId": {
+        "type": "ObjectId",
+        "ref": "Constituency"
+        }
+}

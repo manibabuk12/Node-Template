@@ -1,0 +1,13 @@
+{
+    "name":{
+        "type":"String",
+        "unique":true,
+        "required":true
+    },
+    "symbol": {
+        "type":"String",
+        "unique":true,
+        "required":true
+    },
+    "Active":{"type": "Boolean", "default": true}
+}

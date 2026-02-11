@@ -1,0 +1,9 @@
+{
+  "name": "String",
+  "startDate": "Date",
+  "endDate": "Date",
+  "teamSize": "Number",
+  "created": "Date",
+  "updated": "Date",
+  "email": "String"
+}

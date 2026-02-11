@@ -1,0 +1,21 @@
+{
+  "name": "String",
+  "contact": "String",
+  "website": "String",
+  "email":"String",
+  "street": "String",
+  "city": "String",
+  "state": "String",
+  "zipcode": "Number",
+  "address": "String",
+  "created": "Date",
+  "updated": "Date",
+  "status": {
+    "type": "String",
+    "enum": [
+      "Active",
+      "inActive",
+      ""
+    ]
+  }
+}

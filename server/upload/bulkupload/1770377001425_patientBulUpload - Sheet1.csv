@@ -1,0 +1,3 @@
+name,email,password,age,height,weight,address,role,phone,aadhar,dateOfBirth,gender,status,doctorsIds,reportsIds,prescriptionsIds
+Axar Patel,axar@patient.com,Axar@123,28,160,55,India,patient,1111111111,0000-00-0000,15/08/1990,Male,Active,697c53ebd132762bbdb48cfd,69803eb3bee65e2801298a66,697c967cdb8e0c60ae4ce98c
+Kuldeep Yadav,kuldeep@patient.com,Kuldeep@123,32,156,65,India,patient,1111111111,0000-00-0001,16/01/1993,Male,Active,697c53ebd132762bbdb48cfd,69803e76bee65e2801298a50,698038b5bee65e280129897e

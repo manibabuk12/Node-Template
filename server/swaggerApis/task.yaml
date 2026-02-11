@@ -1,0 +1,28 @@
+components:
+  schemas:
+    taskInputSchema:
+      type: object
+      example:
+        taskName: String
+        priority:
+          type: String
+          enum:
+            - Minor
+            - Major
+            - Critical
+            - ''
+        status:
+          type: String
+          enum:
+            - Active
+            - InActive
+            - Pending
+            - InProgress
+            - ''
+        estimatedTime: String
+        workedHours: String
+        serialNo: String
+        comment: String
+        created: Date
+        updated: Date
+        assignedTo: Autorelatefield

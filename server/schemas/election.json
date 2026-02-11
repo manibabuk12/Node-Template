@@ -1,0 +1,17 @@
+{
+  "name": "String",
+  "constituencyId": {
+    "type": "ObjectId",
+    "ref": "Constituency"
+  },
+  "startDate":"Date",
+  "endDate":"Date",
+  "created": "Date",
+  "updated": "Date",
+  "status": {
+    "type": "String",
+    "enum": [
+      "UPCOMING" , "ONGOING" , "COMPLETED"
+    ]
+  }
+}

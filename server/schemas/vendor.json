@@ -1,0 +1,21 @@
+{
+  "name": "String",
+  "email": "String",
+  "password":"String",
+  "phone": "String",
+  "dateOFBirth": "Date",
+  "role": ["Admin", "Staff"],
+  "hospitalIds": "String",
+  "created": "Date",
+  "updated": "Date",
+  "aadhar": "String",
+  "gender": "String",
+  "status": {
+    "type": "String",
+    "enum": [
+      "Active",
+      "inActive",
+      ""
+    ]
+  }
+}

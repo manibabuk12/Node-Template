@@ -1,0 +1,15 @@
+{
+"name": "String",
+ "description": "string",
+ "patientId": {
+    "type": "ObjectId",
+    "ref": "Patients"
+  },
+ "reportType": ["XRAY", "CTSCAN", "MRI", "BLOODTEST", "ULTRASOUND","FlUOROSCOPY"],
+ "referredBy": "string",
+ "doctorId": {
+    "type": "ObjectId",
+    "ref": "Docotors"
+  },
+  "billAmount": "number"
+}

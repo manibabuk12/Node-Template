@@ -41,14 +41,15 @@ router
   
   
 
-router
-  .route("/getAreaWiseVoteDistribution")
-  .all(authPolicy.isAllowed)
-  .get(authorize("View", controller), asyncHandler(voteCtrl.AreaWiseVoteDistribution));
-router
-  .route("/getVotesPerParty")
-  .all(authPolicy.isAllowed)
-  .get(authorize("View", controller), asyncHandler(voteCtrl.winnersList));
+// router
+//   .route("/getAreaWiseVoteDistribution")
+//   .all(authPolicy.isAllowed)
+//   .get(authorize("View", controller), asyncHandler(voteCtrl.AreaWiseVoteDistribution));
+// router
+//   .route("/getVotesPerParty")
+//   .all(authPolicy.isAllowed)
+//   .get(authorize("View", controller), asyncHandler(voteCtrl.winnersList));
+
 router
   .route("/multiUpdate")
   .all(authPolicy.isAllowed)

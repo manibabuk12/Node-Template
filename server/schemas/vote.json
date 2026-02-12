@@ -13,7 +13,7 @@
         },
     "partyId": {
         "type": "ObjectId",
-        "ref": "Party"
+        "ref": "Partys"
         },
     "constituencyId": {
         "type": "ObjectId",

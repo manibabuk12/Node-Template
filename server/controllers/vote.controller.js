@@ -280,7 +280,7 @@ async function multiupdate(req,res,next){
 
 
 async function getElectionResult(req, res, next){
-  let responseJson = await voteService.VotingAggreations(req, res, next)
+  let responseJson = await voteService.winnerParty(req, res, next)
   res.json({message : "Winning party details",responseJson})
 }
 

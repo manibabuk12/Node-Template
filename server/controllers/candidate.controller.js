@@ -65,20 +65,20 @@ async function get(req, res) {
 }// import { Candidate } from "mocha";
 
 async function listCandidatesByParty(req, res, next) {
- let candidates
-logger.info('Log:Candidate Controller:list: query :' + JSON.stringify(req.query));
-await serviceUtil.checkPermission(req, res, "View", controller);
-const query = await serviceUtil.generateListQuery(req,"candidate");
-let roleDetails = {}
-if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc.role) {
-roleDetails = await roleModel.findOne({ role: req.tokenInfo._doc.role,active:true });
- }
-req.entityType = 'candidate';
-query.dbfields = { password: 0, salt: 0, _v: 0 };
-if (req.query.type === 'exportToCsv') {
-query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
- }
-candidates = await candidateModel.aggregate(
+//  let candidates
+// logger.info('Log:Candidate Controller:list: query :' + JSON.stringify(req.query));
+// await serviceUtil.checkPermission(req, res, "View", controller);
+// const query = await serviceUtil.generateListQuery(req,"candidate");
+// let roleDetails = {}
+// if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc.role) {
+// roleDetails = await roleModel.findOne({ role: req.tokenInfo._doc.role,active:true });
+//  }
+// req.entityType = 'candidate';
+// query.dbfields = { password: 0, salt: 0, _v: 0 };
+// if (req.query.type === 'exportToCsv') {
+// query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
+//  }
+let candidates = await candidateModel.aggregate(
 [
   {
     $match: {
@@ -116,28 +116,28 @@ candidates = await candidateModel.aggregate(
   }
 ]
  ); 
-query.pagination.totalCount = await candidateModel.totalCount(query);
+
 res.json({
-candidates: candidates,
-totalNoOfCandidates: query.pagination
+candidatess: candidates,
+totalNoOfCandidates: candidates.totalCount
  });
 }
 
 async function listCandidatesByConstituency(req, res, next) {
- let candidates
-logger.info('Log:Candidate Controller:list: query :' + JSON.stringify(req.query));
-await serviceUtil.checkPermission(req, res, "View", controller);
-const query = await serviceUtil.generateListQuery(req,"candidate");
-let roleDetails = {}
-if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc.role) {
-roleDetails = await roleModel.findOne({ role: req.tokenInfo._doc.role,active:true });
- }
-req.entityType = 'candidate';
-query.dbfields = { password: 0, salt: 0, _v: 0 };
-if (req.query.type === 'exportToCsv') {
-query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
- }
-candidates = await candidateModel.aggregate(
+//  let candidates
+// logger.info('Log:Candidate Controller:list: query :' + JSON.stringify(req.query));
+// await serviceUtil.checkPermission(req, res, "View", controller);
+// const query = await serviceUtil.generateListQuery(req,"candidate");
+// let roleDetails = {}
+// if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc.role) {
+// roleDetails = await roleModel.findOne({ role: req.tokenInfo._doc.role,active:true });
+//  }
+// req.entityType = 'candidate';
+// query.dbfields = { password: 0, salt: 0, _v: 0 };
+// if (req.query.type === 'exportToCsv') {
+// query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
+//  }
+let candidates = await candidateModel.aggregate(
 [
   {
     $match: {
@@ -173,10 +173,9 @@ candidates = await candidateModel.aggregate(
   }
 ]
  ); 
-query.pagination.totalCount = await candidateModel.totalCount(query);
 res.json({
 candidates: candidates,
-totalNoOfCandidates: query.pagination
+totalNoOfCandidates: candidates.totalCount
  });
 }
 

@@ -3,10 +3,10 @@ import agentModel from "../models/agent.model";
 import session from "../utils/session.util";
 import activityService from "./activity.service";
 import i18nService from "../utils/i18n.util";
-import serviceUtil from "../utils/service.util";
 //replace_encryptedImport
 //replace_serviceImport
 import agent from "../models/agent.model";
+import serviceUtil from "../utils/service.util";
 
 let _ = require("lodash");
 /**
@@ -89,13 +89,12 @@ async function insertAgentData(req, res) {
     try {
       obj[val] = await autoCompleteData(obj[val]);
       if (obj[val]) {
-        const dateFields = ["joinDate", "dateOfBirth", "orientationDate", "terminationDate"];
-        for (let dateField of dateFields) {
-          if (obj[val][dateField] && obj[val][dateField] !== "null") {
-            obj[val][dateField] = await serviceUtil.convertToUTCMidnight(obj[val][dateField]);
-          }
-        }
-      }
+ const dateFields = ["joinDate", "dateOFBirth", "orientationDate", "terminationDate"];
+for (let dateField of dateFields) {
+  if (obj[val][dateField] && obj[val][dateField] !== "null") {
+obj[val][dateField] = await serviceUtil.convertToUTCMidnight(obj[val][dateField]);
+ }
+ }}
       let agent = new agentModel(obj[val]);
       let validateRes = await validateFields(req, obj[val]);
       if (validateRes) {
@@ -193,8 +192,11 @@ const validateAgentBulkFields = async (req, res) => {
   let bulkuploadFields = [
     "name",
     "email",
+    "address",
     "role",
     "phone",
+    "aadhar",
+    "dateOFBirth",
     "gender",
     "status",
   ];
@@ -212,10 +214,15 @@ const validateAgentBulkFields = async (req, res) => {
   return { headersMatched: true };
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @return update the agent profile path
+ */
 const setUpdateProfilePath = async(req,res)=>{
-await agentModel.updateOne({_id:req.tokenInfo._id,active:true},{$set:{profile:req.uploadFile[0].name}})
+  await agentModel.updateOne({_id:req.tokenInfo._id,active:true},{$set:{profile:req.uploadFile[0].name}})
 }
-
 
 
 export default {

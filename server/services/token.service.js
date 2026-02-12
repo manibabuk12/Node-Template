@@ -11,6 +11,7 @@ import Employee from "../models/employee.model";
 import Project from "../models/project.model";
 import Doctor from "../models/doctor.model";
 import Patient from "../models/patient.model.js"
+import Agent from "../models/agent.model.js";
 
 require("dotenv").config();
 const JWTSECRET = process.env.JWTSECRET;
@@ -38,6 +39,9 @@ const getTokenDetails = async (req, token) => {
       }
       if (entityType === "patient") {
         req.details = await Patient.findUniqueEmail(email);
+      }
+      if (entityType === "agent") {
+        req.details = await Agent.findUniqueEmail(email);
       }
       
       console.log("reqTOkenData----------->",req.tokenData);

@@ -147,7 +147,7 @@ const validateVoteBulkFields = async (req, res) => {
   return { headersMatched: true };
 };
 
-const VotingAggreations = async (req, res) => {
+const winnerParty = async (req, res) => {
   const results = await voteModel.aggregate([
     {
       $group: {
@@ -186,13 +186,66 @@ const VotesForPartys = async (req, res) => {
   }
   return updatedResult;
 }
+// 1 . this is one way direct calculation for percentage of votes
+// const totalVotesCount = async (req, res) => {
+//   const successfullVotes = await voteModel.countDocuments();
+//   const totalVotes = await Voter.countDocuments();
+//   const percentage = (successfullVotes * 100) / totalVotes;
+//   return percentage;
 
-const totalVotesCount = async (req, res) => {
-  const successfullVotes = await voteModel.countDocuments();
-  const totalVotes = await Voter.countDocuments();
-  const percentage = (successfullVotes * 100) / totalVotes;
-  return percentage;
+// }
 
+// 2. Voting percentage by using Aggregations
+const totalVotesCount = async (req, res) =>{
+let votes = await Voter.aggregate(
+[
+  {
+    $group: {
+      _id: null,
+      totalVoters: {
+        $sum: 1
+      }
+    }
+  },
+  {
+    $lookup: {
+      from: "votes",
+      pipeline: [
+        {
+          $group: {
+            _id: "$voterId"
+          }
+        }
+      ],
+      as: "votedUsers"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      totalVoters: 1,
+      votedCount: {
+        $size: "$votedUsers"
+      },
+      turnoutPercentage: {
+        $multiply: [
+          {
+            $divide: [
+              {
+                $size: "$votedUsers"
+              },
+              "$totalVoters"
+            ]
+          },
+          100
+        ]
+      }
+    }
+  }
+]
+)
+
+return votes;
 }
 
 
@@ -218,60 +271,60 @@ async function areaViseVotes(req, res) {
 async function voteAndConstituencyWon(req, res) {
 let pipeline = [
   {
-    $group: {
-      _id: "$candidateId",
-      totalVotes: {
-        $sum: 1
-      }
-    }
-  },
-  {
-    $lookup: {
-      from: "candidates",
-      localField: "_id",
-      foreignField: "_id",
-      as: "candidate"
+    $match: {
+      active: true
     }
   },
   {
     $lookup: {
       from: "partys",
-      localField: "candidate.partyId",
+      localField: "partyId",
       foreignField: "_id",
-      as: "partys"
+      as: "party"
+    }
+  },
+  {
+    $unwind: {
+      path: "$party"
     }
   },
   {
     $lookup: {
       from: "constituencys",
-      localField: "candidate.constituencyId",
+      localField: "constituencyId",
       foreignField: "_id",
-      as: "constituency"
+      as: "constituencys"
     }
   },
   {
-    $sort: {
-      totalVotes: -1
+    $unwind: {
+      path: "$constituencys"
     }
   },
   {
     $group: {
-      _id: "$candidate.constituencyId",
-      constituencyName: {
-        $first: "$constituency.name"
+      _id: {
+        constituencyId: "$constituencyId",
+        partyId: "$partyId",
+        partyName: "$party.name",
+        constituencyName: "$constituencys.name"
       },
-      candidateName: {
-        $first: "$candidate.name"
-      },
-      partyName: {
-        $first: "$partys.name"
-      },
-      winnerParty: {
-        $first: "$candidate.partyId"
-      },
-      winnerVotes: {
-        $first: "$totalVotes"
+      count: {
+        $sum: 1
       }
+    }
+  },
+  {
+    $sort: {
+      count: -1
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      partyName: "$_id.partyName",
+      constituencyName: "$_id.constituencyName",
+      votes: "$count"
     }
   }
 ]
@@ -288,7 +341,7 @@ export default {
   insertVoteData,
   validateFields,
   validateVoteBulkFields,
-  VotingAggreations,
+  winnerParty,
   VotesForPartys,
   totalVotesCount,
   areaViseVotes,

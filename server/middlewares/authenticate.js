@@ -6,6 +6,7 @@ import oauthModel from '../auth/models';
 import settingsModel from '../models/settings.model';
 import tokenModel from '../models/token.model';
 import employeeModel from '../models/employee.model';
+import userModel from "../models/user.model";
 /**Services*/
 import tokenService from '../services/token.service';
 /**Utils*/

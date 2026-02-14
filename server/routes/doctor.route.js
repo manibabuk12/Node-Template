@@ -10,10 +10,10 @@ router
 .route("/getDoctorsBypatients")
 .all(authPolicy.isAllowed)
 .get(authorize("View", controller), asyncHandler(doctorCtrl.getDoctorsBypatients));
-router
-.route("/getReportsByPrescription")
-.all(authPolicy.isAllowed)
-.get(authorize("View", controller), asyncHandler(doctorCtrl.getReportsByPrescription));
+// router
+// .route("/getReportsByPrescription")
+// .all(authPolicy.isAllowed)
+// .get(authorize("View", controller), asyncHandler(doctorCtrl.getReportsByPrescription));
 router
 .route("/multiUpdate")
 .all(authPolicy.isAllowed)

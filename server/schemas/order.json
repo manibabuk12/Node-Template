@@ -1,0 +1,84 @@
+{
+  "orderId": {
+  "type": "String",
+  "unique": true,
+  "index":true
+  },
+  "invoiceNumber": {
+  "type": "String",
+  "index": true,
+  "unique": true
+  },
+  "products": {
+  "type": "Array",
+  "schema": {
+  "productId": {
+  "type": "String",
+  "required": true
+  },
+  "productName": {
+  "type": "String",
+  "required": true
+  },
+  "price": {
+  "type": "Number",
+  "required": true
+  },
+  "quantity": {
+  "type": "Number",
+  "required": true
+  },
+  "total": {
+  "type": "Number",
+  "required": true
+  }
+  }
+  },
+  "totalQuantity": {
+  "type": "Number",
+  "required": true
+  },
+  "totalPrice": {
+  "type": "Number",
+  "required": true
+  },
+  
+  "userId": {
+  "type": "String",
+  "required": true,
+  "index": true
+  },
+  "isAmountPaid": {
+  "type": "Boolean",
+  "default": false
+  },
+  "isOrderDelivered": {
+  "type": "Date"
+  },
+  "deliveryDate": {
+  "type": "Date"
+  },
+  "address": {
+  "type": "String"
+  },
+  "state": {
+  "type": "String"
+  },
+  "city": {
+  "type": "String"
+  },
+  "zipCode": {
+  "type": "Number"
+  },
+  "created": {
+  "type": "Date"
+  },
+  "updated": {
+  "type": "Date"
+  },
+  "status": {
+  "type": "String",
+  "enum": ["Processing", "Failed", "Delivered", "Cancelled"],
+  "default": "Processing"
+  }
+}

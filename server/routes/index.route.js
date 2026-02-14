@@ -108,10 +108,6 @@ const doctorRoutes = require("./doctor.route.js");
 // mount employee routes at /employees
 router.use("/doctors", doctorRoutes);
 
-const vendorRoute = require("./vendor.route.js");
-// mount employee routes at /employees
-router.use("/vendors", vendorRoute);
-
 const patientRoutes = require("./patient.route.js");
 // mount employee routes at /employees
 router.use("/patients", patientRoutes);
@@ -135,6 +131,27 @@ router.use("/leaves", leaveRoutes);
 const reportRoutes = require("./report.route.js");
 // mount employee routes at /employees
 router.use("/reports", reportRoutes);
+
+const usertRoutes = require("./user.route.js");
+// mount users routes at /users
+router.use("/users", usertRoutes);
+
+const vendorRoutes = require("./vendor.route.js");
+// mount users routes at /users
+router.use("/vendors", vendorRoutes);
+
+
+const orderRoutes = require("./order.route.js");
+// mount order routes at /orders
+router.use("/orders", orderRoutes);
+
+const productRoutes = require("./product.route.js");
+// mount review routes at /employees
+router.use("/products", productRoutes);
+
+const reviewRoutes = require("./review.route.js");
+// mount review routes at /review
+router.use("/review", reviewRoutes);
 
 
 export default router;

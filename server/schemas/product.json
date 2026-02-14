@@ -1,41 +1,48 @@
 {
-  "vendorId":{
+  "productId":{
     "type":"String",
     "unique":true
   },
-  "firstName": {
+  "vendorId":{
+    "type":"String",
+    "required":true,
+    "ref":"Vendors"
+  },
+  "productName": {
     "type":"String",
     "required":true
   },
-  "lastName": "String",
-  "email": {
-    "type":"String",
-    "required":true
+  "category":{
+    "type": "String",
+    "required":true,
+    "enum": [
+      "Fashion",
+      "Electronics",
+      "Kitchen",
+      "Mobile",
+      "Footwear"
+    ]
   },
-  "password":"String",
-  "phoneNumber": {
+  "price": {
     "type":"Number",
     "required":true
   },
-  "wishList":[],
-  "dateOFBirth": {
+  "dateOfExpiry":{
     "type":"Date",
     "required":true
   },
-  "role": {
+  "brandName":{
     "type":"String",
-    "enum":["vendor"]
+    "required":true
   },
   "created": "Date",
   "updated": "Date",
   "status": {
     "type": "String",
+    "required":true,
     "enum": [
       "Active",
       "inActive"
     ]
-  },
-  "fullName":{
-    "type":"String"
   }
 }

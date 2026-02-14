@@ -12,6 +12,8 @@ import Project from "../models/project.model";
 import Doctor from "../models/doctor.model";
 import Patient from "../models/patient.model.js"
 import Agent from "../models/agent.model.js";
+import User from "../models/user.model.js"
+import Vendor from "../models/vendor.model.js"
 
 require("dotenv").config();
 const JWTSECRET = process.env.JWTSECRET;
@@ -35,7 +37,6 @@ const getTokenDetails = async (req, token) => {
       }
        if (entityType === "doctor") {
         req.details = await Doctor.findUniqueEmail(email);
-        console.log("reqtokendetails-------->",req.details);
       }
       if (entityType === "patient") {
         req.details = await Patient.findUniqueEmail(email);
@@ -43,8 +44,13 @@ const getTokenDetails = async (req, token) => {
       if (entityType === "agent") {
         req.details = await Agent.findUniqueEmail(email);
       }
+      if (entityType === "user") {
+        req.details = await User.findUniqueEmail(email);
+      }
+      if (entityType === "vendor") {
+        req.details = await Vendor.findUniqueEmail(email);
+      }
       
-      console.log("reqTOkenData----------->",req.tokenData);
       if (req.tokenData && req.tokenData._doc) {
         req.tokenData._doc.details = req.details;
       } else {

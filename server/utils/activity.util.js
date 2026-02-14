@@ -1271,7 +1271,198 @@ constituencyDelete : {
     contextType: 'REMOVE',
     desc: 'Constituency Removed',
     key: '273'
+},
+
+userRegister : {
+    context: 'USER',
+    contextType: 'REGISTER',
+    desc: 'User Registerd',
+    key: '274'
 }
+
+,
+userMultidelete : {
+    context: 'USER',
+    contextType: 'MULTIDELETE',
+    desc: 'User Multideleted',
+    key: '275'
+}
+
+,
+userGet : {
+    context: 'USER',
+    contextType: 'GET',
+    desc: 'User Getd',
+    key: '276'
+}
+
+,
+userList : {
+    context: 'USER',
+    contextType: 'LIST',
+    desc: 'User Listd',
+    key: '277'
+}
+
+,
+userCreate : {
+    context: 'EMPLOYEE',
+    contextType: 'CREATE',
+    desc: 'User Created',
+    key: '278'
+}
+
+,
+userUpdate : {
+    context: 'USER',
+    contextType: 'UPDATE',
+    desc: 'User Updated',
+    key: '279'
+}
+
+,
+userDelete : {
+    context: 'USER',
+    contextType: 'REMOVE',
+    desc: 'User Removed',
+    key: '280'
+}
+
+,
+userLoginSuccess : {
+    context: 'USER',
+    contextType: 'LOGINSUCCESS',
+    desc: 'User LoginSuccessd',
+    key: '281'
+}
+
+,
+userChangePassword : {
+    context: 'USER',
+    contextType: 'CHANGEPASSWORD',
+    desc: 'User ChangePasswordd',
+    key: '282'
+}
+
+,
+userForgotPassword : {
+    context: 'USER',
+    contextType: 'FORGOTPASSWORD',
+    desc: 'User ForgotPasswordd',
+    key: '283'
+}
+
+,
+userLogoutSuccess : {
+    context: 'USER',
+    contextType: 'LOGOUTSUCCESS',
+    desc: 'User LogoutSuccessd',
+    key: '284'
+}
+
+,
+userRegister : {
+    context: 'USER',
+    contextType: 'REGISTER',
+    desc: 'User Registerd',
+    key: '285'
+},
+
+vendorRegister : {
+    context: 'USER',
+    contextType: 'REGISTER',
+    desc: 'User Registerd',
+    key: '286'
+}
+
+,
+vendorMultidelete : {
+    context: 'USER',
+    contextType: 'MULTIDELETE',
+    desc: 'User Multideleted',
+    key: '287'
+}
+
+,
+vendorGet : {
+    context: 'USER',
+    contextType: 'GET',
+    desc: 'User Getd',
+    key: '288'
+}
+
+,
+vendorList : {
+    context: 'USER',
+    contextType: 'LIST',
+    desc: 'User Listd',
+    key: '289'
+}
+
+,
+vendorCreate : {
+    context: 'EMPLOYEE',
+    contextType: 'CREATE',
+    desc: 'User Created',
+    key: '290'
+}
+
+,
+vendorUpdate : {
+    context: 'USER',
+    contextType: 'UPDATE',
+    desc: 'User Updated',
+    key: '291'
+}
+
+,
+vendorDelete : {
+    context: 'USER',
+    contextType: 'REMOVE',
+    desc: 'User Removed',
+    key: '292'
+}
+
+,
+vendorLoginSuccess : {
+    context: 'USER',
+    contextType: 'LOGINSUCCESS',
+    desc: 'User LoginSuccessd',
+    key: '293'
+}
+
+,
+vendorChangePassword : {
+    context: 'USER',
+    contextType: 'CHANGEPASSWORD',
+    desc: 'User ChangePasswordd',
+    key: '294'
+}
+
+,
+vendorForgotPassword : {
+    context: 'USER',
+    contextType: 'FORGOTPASSWORD',
+    desc: 'User ForgotPasswordd',
+    key: '295'
+}
+
+,
+vendorLogoutSuccess : {
+    context: 'USER',
+    contextType: 'LOGOUTSUCCESS',
+    desc: 'User LogoutSuccessd',
+    key: '296'
+}
+
+,
+vendorRegister : {
+    context: 'USER',
+    contextType: 'REGISTER',
+    desc: 'User Registerd',
+    key: '297'
+}
+
   },
 };
 

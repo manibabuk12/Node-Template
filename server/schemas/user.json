@@ -1,4 +1,8 @@
 {
+  "userId":{
+    "type":"String",
+    "unique":true
+  },
   "firstName": {
     "type":"String",
     "required":true
@@ -13,13 +17,14 @@
     "type":"Number",
     "required":true
   },
-  "dateOfBirth":{
+  "wishList":[],
+  "dateOFBirth": {
     "type":"Date",
     "required":true
   },
   "role": {
     "type":"String",
-    "required":true
+    "enum":["user","vendor"]
   },
   "created": "Date",
   "updated": "Date",

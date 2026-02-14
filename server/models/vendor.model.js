@@ -6,10 +6,11 @@ import mongooseFloat from "mongoose-float";
 import { getDynamicSchemaFields } from "../helpers/dynamicSchemaHelper";
 import APIError from "../helpers/APIError";
 
+
 const Float = mongooseFloat.loadType(mongoose);
 const Schema = mongoose.Schema;
 
-const EmployeesSchemaJson = require("../schemas/employee.json");
+const VendorsSchemaJson = require("../schemas/vendor.json");
 
 /**
  * Default Scheamas
@@ -60,27 +61,27 @@ let defaultSchemaValues = {
     default: true,
   },
   photoUrl: String,
-  isGoogleUser: { type: Boolean },
+  isGoogleVendor: { type: Boolean },
   reportingTo: {
     type: Schema.ObjectId,
-    ref: "Employees",
+    ref: "Vendors",
   },
   reportingToSearch: String,
 };
 
 /**
- * Employees Schema
+ * Vendors Schema
  */
 const dynamicSchemaFields = getDynamicSchemaFields(
-  "employee",
+  "vendor",
   defaultSchemaValues,
-  EmployeesSchemaJson
+  VendorsSchemaJson
 );
 
-const EmployeesSchema = new mongoose.Schema(
+const VendorsSchema = new mongoose.Schema(
   {
     ...defaultSchemaValues,
-    ...EmployeesSchemaJson,
+    ...VendorsSchemaJson,
     ...dynamicSchemaFields,
   },
   { usePushEach: true }
@@ -89,13 +90,19 @@ const EmployeesSchema = new mongoose.Schema(
 /**
  * Hook a pre save method to hash the password
  */
-EmployeesSchema.pre("save", function (next) {
+VendorsSchema.pre("save", function (next) {
+  try{
+
+  if(this.firstName || this.lastName){
+    this.fullName = `${this.firstName || ""} ${this.lastName || ""}`.trim();
+  }
   if (this.password && this.isModified("password")) {
     this.salt = crypto.randomBytes(16).toString("base64");
     this.password = this.hashPassword(this.password);
   }
 
   next();
+}catch(err){}
 });
 
 /**
@@ -106,7 +113,7 @@ EmployeesSchema.pre("save", function (next) {
  */
 function preValidatorSchema(thisObj, next) {
   if (!thisObj) {
-    const validationError = new APIError("failed to save user data.");
+    const validationError = new APIError("failed to save vendor data.");
     validationError.name = "mongoFieldError";
     next(validationError);
   } else {
@@ -117,19 +124,15 @@ function preValidatorSchema(thisObj, next) {
 }
 
 /**
- * Hook a pre validate method to employee the local password
+ * Hook a pre validate method to vendor the local password
  */
-EmployeesSchema.pre("validate", function (next) {
-
-  if(this.firstName || this.lastName){
-    this.fullName = `${this.firstName || ""} ${this.lastName || ""}`.trim();
-  }
+VendorsSchema.pre("validate", function (next) {
   if (
     this.provider === "local" &&
     this.password &&
     this.isModified("password")
   ) {
-    let result = owasp.employee(this.password);
+    let result = owasp.vendor(this.password);
     if (result.errors.length) {
       let error = result.errors.join(" ");
       this.invalidate("password", error);
@@ -150,9 +153,9 @@ EmployeesSchema.pre("validate", function (next) {
 /**
  * Methods
  */
-EmployeesSchema.methods = {
+VendorsSchema.methods = {
   /**
-   * Create instance method for authenticating employee
+   * Create instance method for authenticating vendor
    * @param {password}
    */
   authenticate(password) {
@@ -180,25 +183,25 @@ EmployeesSchema.methods = {
   },
 };
 
-EmployeesSchema.statics = {
+VendorsSchema.statics = {
   /**
-   * save and update Employees
-   * @param Employees
-   * @returns {Promise<Employees, APIError>}
+   * save and update Vendors
+   * @param Vendors
+   * @returns {Promise<Vendors, APIError>}
    */
-  saveData(employee) {
-    return employee.save().then((employee) => {
-      if (employee) {
-        return employee;
+  saveData(vendor) {
+    return vendor.save().then((vendor) => {
+      if (vendor) {
+        return vendor;
       }
-      const err = new APIError("error in employee", httpStatus.NOT_FOUND);
+      const err = new APIError("error in vendor", httpStatus.NOT_FOUND);
       return Promise.reject(err);
     });
   },
 
   /**
-   * List employee in descending order of 'createdAt' timestamp.
-   * @returns {Promise<employee[]>}
+   * List vendor in descending order of 'createdAt' timestamp.
+   * @returns {Promise<vendor[]>}
    */
   list(query) {
     return this.find(query.filter, query.dbfields)
@@ -211,27 +214,27 @@ EmployeesSchema.statics = {
   },
 
   /**
-   * Count of employee records
-   * @returns {Promise<employee[]>}
+   * Count of vendor records
+   * @returns {Promise<vendor[]>}
    */
   totalCount(query) {
     return this.find(query.filter).countDocuments();
   },
   /**
-   * Get employee
-   * @param {ObjectId} id - The objectId of employee.
-   * @returns {Promise<employee, APIError>}
+   * Get vendor
+   * @param {ObjectId} id - The objectId of vendor.
+   * @returns {Promise<vendor, APIError>}
    */
   get(id) {
     return this.findById(id)
       .populate("reportingTo", "name ")
       .exec()
-      .then((employee) => {
-        if (employee) {
-          return employee;
+      .then((vendor) => {
+        if (vendor) {
+          return vendor;
         }
         const err = new APIError(
-          "No such employee exists",
+          "No such vendor exists",
           httpStatus.NOT_FOUND
         );
         return Promise.reject(err);
@@ -241,7 +244,7 @@ EmployeesSchema.statics = {
   /**
    * Find unique email.
    * @param {string} email.
-   * @returns {Promise<Employees[]>}
+   * @returns {Promise<Vendors[]>}
    */
   findUniqueEmail(email) {
     email = email.toLowerCase();
@@ -251,8 +254,8 @@ EmployeesSchema.statics = {
     })
       .populate("listPreferences", "columnOrder")
       .exec()
-      .then((employee) => employee);
+      .then((vendor) => vendor);
   },
 };
 
-export default mongoose.model("Employees", EmployeesSchema);
+export default mongoose.model("Vendors", VendorsSchema);

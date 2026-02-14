@@ -86,9 +86,6 @@ const PatientsSchema = new mongoose.Schema(
   { usePushEach: true }
 );
 
-console.log("doctorId path =>", PatientsSchema.paths.doctorId);
-
-
 /**
  * Hook a pre save method to hash the password
  */

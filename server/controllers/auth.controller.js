@@ -12,8 +12,9 @@ import Employee from "../models/employee.model";
 import Project from "../models/project.model";
 import Doctor from "../models/doctor.model.js";
 import Patient from "../models/patient.model.js";
-import Vendor from "../models/vender.model.js";
 import Agent from "../models/agent.model.js";
+import User from "../models/user.model.js";
+import Vendor from "../models/vendor.model.js";
 
 /**Services */
 import activityService from "../services/activity.service";
@@ -35,9 +36,11 @@ import Token from "../models/token.model";
 const emailService = new EmailService();
 import smsService from "../services/otp.service";
 import agentModel from "../models/agent.model.js";
+import userModel from "../models/user.model.js";
+import vendorModel from "../models/vendor.model.js";
 
 const controller = "Auth";
-const validLoginTypes = ["agent","Staff","vendor","admin", "employee", "doctor", "patient", "project", "user"];
+const validLoginTypes = ["user","agent","vendor","Staff","admin", "employee", "doctor", "patient", "project", "user"];
 
 /**
  * login response
@@ -126,8 +129,9 @@ async function checkDeviceInfo(req, details) {
       if (entityType === "project") await Project.saveData(req.details);
       if (entityType === "doctor") await Doctor.saveData(req.details);
       if (entityType === "patient") await Patient.saveData(req.details);
-      if (entityType === "vendor") await Vendor.saveData(req.details);
       if (entityType === "agent") await Agent.saveData(req.details);
+      if (entityType === "user") await User.saveData(req.details);
+      if (entityType === "vendor") await Vendor.saveData(req.details);
     }
   }
 }
@@ -166,11 +170,14 @@ async function login(req, res, next) {
   if (entityType === "patient") {
     req.details = await Patient.findUniqueEmail(email);
   }
-  if (entityType === "vendor") {
-    req.details = await Vendor.findUniqueEmail(email);
-  }
   if (entityType === "agent") {
     req.details = await Agent.findUniqueEmail(email);
+  }
+  if (entityType === "user") {
+    req.details = await User.findUniqueEmail(email);
+  }
+  if (entityType === "vendor") {
+    req.details = await Vendor.findUniqueEmail(email);
   }
   req.entityType = `${entityType}`;
   req.activityKey = `${entityType}LoginSuccess`;
@@ -297,6 +304,14 @@ async function logout(req, res) {
     activity.agentId = sessionUtil.getTokenInfo(req, "_id");
     req.activityKey = "agentLogoutSuccess";
   }
+  if (sessionUtil.getTokenInfo(req, "loginType") === "user") {
+    activity.userId = sessionUtil.getTokenInfo(req, "_id");
+    req.activityKey = "userLogoutSuccess";
+  }
+  if (sessionUtil.getTokenInfo(req, "loginType") === "vendor") {
+    activity.userId = sessionUtil.getTokenInfo(req, "_id");
+    req.activityKey = "userLogoutSuccess";
+  }
   await tokenService.deleteToken(req);
   await activityService.insertActivity(req);
   responseJson = {
@@ -338,6 +353,14 @@ async function forgotPassword(req, res) {
   } else if (req.body.entityType === "agent") {
     //Email exists check
     req.details = await Agent.findUniqueEmail(req.query.email);
+    req.url = templateInfo.userUrl;
+  } else if (req.body.entityType === "user") {
+    //Email exists check
+    req.details = await User.findUniqueEmail(req.query.email);
+    req.url = templateInfo.userUrl;
+  } else if (req.body.entityType === "vendor") {
+    //Email exists check
+    req.details = await Vendor.findUniqueEmail(req.query.email);
     req.url = templateInfo.userUrl;
   } 
   else {
@@ -388,6 +411,8 @@ async function forgotPassword(req, res) {
   if (entityType === "doctor") await Doctor.saveData(req.details);
   if (entityType === "patient") await Patient.saveData(req.details);
   if (entityType === "agent") await Agent.saveData(req.details);
+  if (entityType === "user") await User.saveData(req.details);
+  if (entityType === "vendor") await Vendor.saveData(req.details);
 
   //Send email link to reset the password
   emailService.sendEmailviaGrid({
@@ -443,6 +468,12 @@ async function changeRecoverPassword(req, res) {
   if (entityType === "agent") {
     req.details = await Agent.findUniqueEmail(email);
   }
+  if (entityType === "user") {
+    req.details = await User.findUniqueEmail(email);
+  }
+  if (entityType === "vendor") {
+    req.details = await Vendor.findUniqueEmail(email);
+  }
 
   // email not exists
   if (!req.details) {
@@ -484,6 +515,8 @@ async function changeRecoverPassword(req, res) {
   if (entityType === "doctor") await Doctor.saveData(req.details);
   if (entityType === "patient") await Patient.saveData(req.details);
   if (entityType === "agent") await Agent.saveData(req.details);
+  if (entityType === "user") await User.saveData(req.details);
+  if (entityType === "vendor") await Vendor.saveData(req.details);
 
   req.activityKey = `${req.body.entityType}ChangePassword`;
   req.entityType = `${req.body.entityType}`;
@@ -533,6 +566,12 @@ async function changePassword(req, res) {
     if (entityType === "agent") {
       req.details = await Agent.get(id);
     }
+    if (entityType === "user") {
+      req.details = await User.get(id);
+    }
+    if (entityType === "vendor") {
+      req.details = await Vendor.get(id);
+    }
   } catch (error) {
     notFoundError = true;
   }
@@ -569,6 +608,8 @@ async function changePassword(req, res) {
         if (entityType === "doctor") await Doctor.saveData(req.details);
         if (entityType === "patient") await Patient.saveData(req.details);
         if (entityType === "agent") await Agent.saveData(req.details);
+        if (entityType === "user") await User.saveData(req.details);
+        if (entityType === "vendor") await Vendor.saveData(req.details);
 
         req.activityKey = `${entityType}ChangePassword`;
         req.entityType = `${req.body.entityType}`;
@@ -726,6 +767,40 @@ async function socialLogin(req, res) {
       agent._doc.firstTimeLogin = true;
       agent._doc.created = Date.now();
       agent = await agentModel.saveData(agent);
+      req.details = agent;
+      req.authEntityType = agent;
+      req.activityKey = `${entityType}Create`;
+      activityService.insertActivity(req);
+    }
+  }
+  else if (entityType === "user") {
+    req.details = await userModel.findUniqueEmail(email);
+    let agent = req.details;
+    req.entityType = entityType;
+    if (!agent) {
+      agent = new userModel(req.body);
+      agent._doc.status = "Active";
+      agent._doc.role = "User";
+      agent._doc.firstTimeLogin = true;
+      agent._doc.created = Date.now();
+      agent = await userModel.saveData(agent);
+      req.details = agent;
+      req.authEntityType = agent;
+      req.activityKey = `${entityType}Create`;
+      activityService.insertActivity(req);
+    }
+  }
+  else if (entityType === "vendor") {
+    req.details = await vendorModel.findUniqueEmail(email);
+    let agent = req.details;
+    req.entityType = entityType;
+    if (!agent) {
+      agent = new vendorModel(req.body);
+      agent._doc.status = "Active";
+      agent._doc.role = "User";
+      agent._doc.firstTimeLogin = true;
+      agent._doc.created = Date.now();
+      agent = await vendorModel.saveData(agent);
       req.details = agent;
       req.authEntityType = agent;
       req.activityKey = `${entityType}Create`;
@@ -1041,6 +1116,12 @@ async function findEntityUser(req, type) {
     if (entityType === "agent") {
       return await Agent.findUniqueEmail(email);
     }
+    if (entityType === "user") {
+      return await User.findUniqueEmail(email);
+    }
+    if (entityType === "vendor") {
+      return await Vendor.findUniqueEmail(email);
+    }
   } else {
     if (entityType === "employee") {
       return await Employee.findOne({ email, active: true });
@@ -1056,6 +1137,12 @@ async function findEntityUser(req, type) {
     }
     if (entityType === "agent") {
       return await Agent.findOne({ email, active: true });
+    }
+    if (entityType === "user") {
+      return await User.findOne({ email, active: true });
+    }
+    if (entityType === "vendor") {
+      return await Vendor.findOne({ email, active: true });
     }
   }
 }
@@ -1076,6 +1163,12 @@ async function saveEntityUser(req, authUserObj) {
   }
   if (entityType === "agent") {
     return await Agent.saveData(authUserObj);
+  }
+  if (entityType === "user") {
+    return await User.saveData(authUserObj);
+  }
+  if (entityType === "vendor") {
+    return await Vendor.saveData(authUserObj);
   }
 }
 
@@ -1100,6 +1193,12 @@ async function googlelogin(req, res) {
   }
   if (entityType === "agent") {
     req.details = await Agent.findUniqueEmail(email);
+  }
+  if (entityType === "user") {
+    req.details = await User.findUniqueEmail(email);
+  }
+  if (entityType === "vendor") {
+    req.details = await Vendor.findUniqueEmail(email);
   }
 
   if (!req.details) {

@@ -44,7 +44,9 @@ let config = {
     employee: "employee",
     doctor: "doctor",
     patient:"patient",
-    agent:"agent"
+    agent:"agent",
+    user:"user",
+    vendor:"vendor"
   },
   commonStatus: {
     Active: "Active",
@@ -59,10 +61,14 @@ let config = {
     register: "register",
     adminForgetPassword: "admin forget password",
     employeeWelcome: "employee welcome",
+    userWelcome:"user welcome",
+    vendorWelcome:"vendor welcome",
     welcomeUser: "welcome user",
     authenticationUser: "authentication user",
     differentDeviceLoginConfirmation: "different device login confirmation",
     employeeCreate: "employeeCreate",
+    vendorCreate: "vendorCreate",
+    userCreate:"userCreate",
     agentCreate: "agentCreate",
     doctorCreate: "doctorCreate",
     patientCreate: "patientCreate",
@@ -86,7 +92,13 @@ let config = {
     ...{
       EmployeesDuplicates: "server/upload/EmployeesDuplicates",
       employees: "server/upload/employees",
+      vendorsattachment: "server/upload/attachment/vendors",
+      VendorsDuplicates: "server/upload/VendorsDuplicates",
+      vendors: "server/upload/vendors",
       employeesattachment: "server/upload/attachment/employees",
+      UsersDuplicates: "server/upload/UsersDuplicates",
+      users: "server/upload/users",
+      usersattachment: "server/upload/attachment/users",
       DoctorsDuplicates: "server/upload/DoctorsDuplicates",
       doctors: "server/upload/doctors",
       doctorsattachment: "server/upload/attachment/doctors",
@@ -130,6 +142,8 @@ let config = {
     ...{
       user: "server/upload/user",
       employee: "server/upload/employee",
+      vendor:"server/upload/vendor",
+      user: "server/upload/user",
       doctor:"server/upload/doctor",
       patient:"server/upload/patient",
       agent:"server/upload/agent",

@@ -58,11 +58,11 @@ const controller = "Employee";
     req.employee = await employeeModel.saveData(employee);
     req.employee.password = req.employee.salt = undefined;
     req.entityType = 'employee';
-    req.activityKey = 'employeeRegister';
+    req.activityKey = 'employeeRegister';``
     activityService.insertActivity(req);
     if (req.body.email) {
     emailService.sendEmailviaGrid({
-        templateName: config.emailTemplates.employeeCreate,
+        templateName: config.emailTemplates.employeeWelcome,
         entityType: sessionUtil.getLoginType(req),
         emailParams: {
             to: req.body.email

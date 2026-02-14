@@ -6,10 +6,11 @@ import mongooseFloat from "mongoose-float";
 import { getDynamicSchemaFields } from "../helpers/dynamicSchemaHelper";
 import APIError from "../helpers/APIError";
 
+
 const Float = mongooseFloat.loadType(mongoose);
 const Schema = mongoose.Schema;
 
-const VendorsSchemaJson = require("../schemas/vendor.json");
+const UsersSchemaJson = require("../schemas/user.json");
 
 /**
  * Default Scheamas
@@ -63,24 +64,24 @@ let defaultSchemaValues = {
   isGoogleUser: { type: Boolean },
   reportingTo: {
     type: Schema.ObjectId,
-    ref: "Vendors",
+    ref: "Users",
   },
   reportingToSearch: String,
 };
 
 /**
- * Vendors Schema
+ * Users Schema
  */
 const dynamicSchemaFields = getDynamicSchemaFields(
-  "vendor",
+  "user",
   defaultSchemaValues,
-  VendorsSchemaJson
+  UsersSchemaJson
 );
 
-const VendorsSchema = new mongoose.Schema(
+const UsersSchema = new mongoose.Schema(
   {
     ...defaultSchemaValues,
-    ...VendorsSchemaJson,
+    ...UsersSchemaJson,
     ...dynamicSchemaFields,
   },
   { usePushEach: true }
@@ -89,13 +90,19 @@ const VendorsSchema = new mongoose.Schema(
 /**
  * Hook a pre save method to hash the password
  */
-VendorsSchema.pre("save", function (next) {
+UsersSchema.pre("save", function (next) {
+  try{
+
+  if(this.firstName || this.lastName){
+    this.fullName = `${this.firstName || ""} ${this.lastName || ""}`.trim();
+  }
   if (this.password && this.isModified("password")) {
     this.salt = crypto.randomBytes(16).toString("base64");
     this.password = this.hashPassword(this.password);
   }
 
   next();
+}catch(err){}
 });
 
 /**
@@ -117,15 +124,15 @@ function preValidatorSchema(thisObj, next) {
 }
 
 /**
- * Hook a pre validate method to vendor the local password
+ * Hook a pre validate method to user the local password
  */
-VendorsSchema.pre("validate", function (next) {
+UsersSchema.pre("validate", function (next) {
   if (
     this.provider === "local" &&
     this.password &&
     this.isModified("password")
   ) {
-    let result = owasp.vendor(this.password);
+    let result = owasp.user(this.password);
     if (result.errors.length) {
       let error = result.errors.join(" ");
       this.invalidate("password", error);
@@ -146,9 +153,9 @@ VendorsSchema.pre("validate", function (next) {
 /**
  * Methods
  */
-VendorsSchema.methods = {
+UsersSchema.methods = {
   /**
-   * Create instance method for authenticating vendor
+   * Create instance method for authenticating user
    * @param {password}
    */
   authenticate(password) {
@@ -176,25 +183,25 @@ VendorsSchema.methods = {
   },
 };
 
-VendorsSchema.statics = {
+UsersSchema.statics = {
   /**
-   * save and update Vendors
-   * @param Vendors
-   * @returns {Promise<Vendors, APIError>}
+   * save and update Users
+   * @param Users
+   * @returns {Promise<Users, APIError>}
    */
-  saveData(vendor) {
-    return vendor.save().then((vendor) => {
-      if (vendor) {
-        return vendor;
+  saveData(user) {
+    return user.save().then((user) => {
+      if (user) {
+        return user;
       }
-      const err = new APIError("error in vendor", httpStatus.NOT_FOUND);
+      const err = new APIError("error in user", httpStatus.NOT_FOUND);
       return Promise.reject(err);
     });
   },
 
   /**
-   * List vendor in descending order of 'createdAt' timestamp.
-   * @returns {Promise<vendor[]>}
+   * List user in descending order of 'createdAt' timestamp.
+   * @returns {Promise<user[]>}
    */
   list(query) {
     return this.find(query.filter, query.dbfields)
@@ -207,27 +214,27 @@ VendorsSchema.statics = {
   },
 
   /**
-   * Count of vendor records
-   * @returns {Promise<vendor[]>}
+   * Count of user records
+   * @returns {Promise<user[]>}
    */
   totalCount(query) {
     return this.find(query.filter).countDocuments();
   },
   /**
-   * Get vendor
-   * @param {ObjectId} id - The objectId of vendor.
-   * @returns {Promise<vendor, APIError>}
+   * Get user
+   * @param {ObjectId} id - The objectId of user.
+   * @returns {Promise<user, APIError>}
    */
   get(id) {
     return this.findById(id)
       .populate("reportingTo", "name ")
       .exec()
-      .then((vendor) => {
-        if (vendor) {
-          return vendor;
+      .then((user) => {
+        if (user) {
+          return user;
         }
         const err = new APIError(
-          "No such vendor exists",
+          "No such user exists",
           httpStatus.NOT_FOUND
         );
         return Promise.reject(err);
@@ -237,7 +244,7 @@ VendorsSchema.statics = {
   /**
    * Find unique email.
    * @param {string} email.
-   * @returns {Promise<Vendors[]>}
+   * @returns {Promise<Users[]>}
    */
   findUniqueEmail(email) {
     email = email.toLowerCase();
@@ -247,8 +254,8 @@ VendorsSchema.statics = {
     })
       .populate("listPreferences", "columnOrder")
       .exec()
-      .then((vendor) => vendor);
+      .then((user) => user);
   },
 };
 
-export default mongoose.model("Vendors", VendorsSchema);
+export default mongoose.model("Users", UsersSchema);

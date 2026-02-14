@@ -1,11 +1,17 @@
-import vendorModel from "../models/vender.model.js";
+import vendorModel from "../models/vendor.model.js";
 
-import session from "../utils/session.util";
-import activityService from "./activity.service";
-import i18nService from "../utils/i18n.util";
+import session from "../utils/session.util.js";
+import activityService from "./activity.service.js";
+import i18nService from "../utils/i18n.util.js";
 //replace_encryptedImport
 //replace_serviceImport
-import vendor from "../models/vender.model.js";
+import vendor from "../models/vendor.model.js";
+import serviceUtil from "../utils/service.util.js";
+import orderModel from "../models/order.model.js";
+import reviewModel from "../models/review.model.js";
+import Product from "../models/product.model.js";
+import Order from "../models/order.model.js";
+import Review from "../models/review.model.js";
 
 let _ = require("lodash");
 /**
@@ -13,13 +19,25 @@ let _ = require("lodash");
  * @returns {vendorModel}
  */
 const setCreateVendorVariables = async (req, vendor) => {
+
+    const lastRecord = await vendorModel.findOne().sort({ created: -1 });
+    
+    let nextVendorNum = "1";
+    if (lastRecord && lastRecord.productId) {
+    // Extracts the number
+    const lastNum = parseInt(lastRecord.vendorId.replace(/^\D+/g, ''), 10);
+    nextVendorNum = isNaN(lastNum) ? 0 : lastNum + 1;
+    }
+    vendor.vendorId = `V-${nextVendorNum}`;
+
+
   if (req.tokenInfo) {
     vendor.createdBy = session.getSessionLoginID(req);
-    vendor.userId = session.getSessionLoginID(req);
-    vendor.userName = session.getSessionLoginName(req);
+    vendor.vendorId = session.getSessionLoginID(req);
+    vendor.vendorName = session.getSessionLoginName(req);
     vendor.createdByName = session.getSessionLoginName(req);
     // vendor.status = "Pending";
-    vendor.userEmail = session.getSessionLoginEmail(req);
+    vendor.vendorEmail = session.getSessionLoginEmail(req);
     //replace_encryptedFields
     //replace_uniqueIdGeneration
   }
@@ -87,6 +105,13 @@ async function insertVendorData(req, res) {
   for (let val in obj) {
     try {
       obj[val] = await autoCompleteData(obj[val]);
+      if (obj[val]) {
+ const dateFields = ["joinDate", "dateOFBirth", "orientationDate", "terminationDate"];
+for (let dateField of dateFields) {
+  if (obj[val][dateField] && obj[val][dateField] !== "null") {
+obj[val][dateField] = await serviceUtil.convertToUTCMidnight(obj[val][dateField]);
+ }
+ }}
       let vendor = new vendorModel(obj[val]);
       let validateRes = await validateFields(req, obj[val]);
       if (validateRes) {
@@ -140,21 +165,45 @@ const getVendors = async (members) => {
   return reportingMembersArray;
 };
 
-const validateFields = async (req, vendor) => {
-  let isError = false;
+const validateFields = async (req, vendors) => {
+let isError = false;
   if (
-    vendor.password &&
-    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-      vendor.password
-    )
-  ) {
-    req.errorMessage =
-      "Password must contain at least 8 characters, one uppercase, one number and one special case character";
-    isError = true;
-    return isError;
-  }
-  //replaceRequiredFields
+  vendors.password &&
+  !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+  vendors.password
+  )) {
+  req.errorMessage =
+  "Password must contain at least 8 characters, one uppercase, one number and one special case character";
+  isError = true;
   return isError;
+  }
+  //only his record
+  if(req.tokenInfo.role === "vendor") {
+  if(vendors._id && vendors._id.toString() !== req.tokenInfo._id){
+  req.i18nKey = "ownUpdatePermissionErr";
+  isError = true;
+}
+}
+
+  //only his record
+  if(req.tokenInfo.role === "vendor") {
+  if(vendors._id && vendors._id.toString() !== req.tokenInfo._id){
+    req.i18nKey = "ownUpdatePermissionErr";
+    isError = true;
+}
+}
+
+  // allow only specific fields
+  const allowedFields = ["firstName", "lastName", "phoneNumber"];
+  const updateKeys = Object.keys(req.body);
+  const invalidField = updateKeys.find(
+  key => !allowedFields.includes(key)
+);
+if(invalidField){
+  req.i18nKey = "updateLimitErr";
+  isError = true;
+}
+return isError;
 };
 
 const requriedFields = async (req) => {
@@ -206,6 +255,229 @@ const validateVendorBulkFields = async (req, res) => {
   return { headersMatched: true };
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @return update the vendor profile path
+ */
+const setUpdateProfilePath = async(req,res)=>{
+  await vendorModel.updateOne({_id:req.tokenInfo._id,active:true},{$set:{profile:req.uploadFile[0].name}})
+}
+
+const roleBasedOrdersProductsReviews = async (req) => {
+
+  //  Get logged-in vendor
+  const vendor = await vendorModel
+    .findById(req.tokenInfo._id)
+    .lean();
+
+  if (!vendor) {
+    throw new Error("Vendor not found");
+  }
+
+  const vendorId = vendor.vendorId;
+
+  //  Get orders & reviews of that vendor
+  const orders = await orderModel
+    .find({ vendorId })
+    .lean();
+
+  const reviews = await reviewModel
+    .find({ vendorId })
+    .lean();
+
+  // Create review map (productId → reviews[])
+  const reviewMap = {};
+
+  for (const review of reviews) {
+    if (!reviewMap[review.productId]) {
+      reviewMap[review.productId] = [];
+    }
+    reviewMap[review.productId].push(review);
+  }
+
+  // Combine orders with related reviews
+  const combined = orders.map(order => {
+
+    // Flatten nested product arrays
+    const flatProducts = order.products.flat();
+
+    // Extract productIds
+    const productIds = flatProducts.map(p => p.productId);
+
+    // Get matching reviews
+    const matchedReviews = productIds.flatMap(
+      id => reviewMap[id] || []
+    );
+
+    return {
+      ...order,
+      reviews: matchedReviews
+    };
+  });
+
+  return combined;
+};
+
+
+export const getVendorDashboardService = async (vendorId) => {
+
+  //  Get vendor products
+  const products = await Product.find({ vendorId }).lean();
+  const productIds = products.map(p => p.productId);
+
+  if (!productIds.length) {
+    return {
+      totalOrders: 0,
+      deliveredOrders: 0,
+      cancelledOrders: 0,
+      totalRevenue: 0,
+      monthWiseOrders: {},
+      weekWiseOrders: {},
+      bestSellingProducts: [],
+      averageRating: 0
+    };
+  }
+
+  const productIdSet = new Set(productIds);
+
+  //  Get orders containing vendor products
+  const orders = await Order.find({
+    "products.productId": { $in: productIds }
+  }).lean();
+
+  let totalOrders = 0;
+  let deliveredOrders = 0;
+  let cancelledOrders = 0;
+  let totalRevenue = 0;
+
+  const monthWiseOrders = {};
+  const weekWiseOrders = {};
+  const productSales = {};
+
+  for (const order of orders) {
+
+    let vendorProductFound = false;
+
+    for (const product of order.products) {
+
+      if (productIdSet.has(product.productId)) {
+
+        vendorProductFound = true;
+
+        // Revenue (only Delivered)
+        if (order.status === "Delivered") {
+          totalRevenue += product.total;
+        }
+
+        // Best selling
+        productSales[product.productId] =
+          (productSales[product.productId] || 0) + product.quantity;
+      }
+    }
+
+    if (vendorProductFound) {
+
+      totalOrders++;
+
+      if (order.status === "Delivered") deliveredOrders++;
+      if (order.status === "Cancelled") cancelledOrders++;
+
+      const date = new Date(order.created);
+
+      // Month-wise
+      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+      monthWiseOrders[monthKey] =
+        (monthWiseOrders[monthKey] || 0) + 1;
+
+      // Week-wise (week of month)
+      const week = Math.ceil(date.getDate() / 7);
+      const weekKey = `${monthKey}-W${week}`;
+      weekWiseOrders[weekKey] =
+        (weekWiseOrders[weekKey] || 0) + 1;
+    }
+  }
+
+  // Best Selling Products (sorted)
+  const bestSellingProducts = Object.entries(productSales)
+    .sort((a, b) => b[1] - a[1])
+    .map(([productId, quantity]) => ({
+      productId,
+      quantity
+    }));
+
+  //  Average Rating
+  const reviews = await Review.find({
+    productId: { $in: productIds },
+    status: "Active"
+  }).lean();
+
+  let averageRating = 0;
+
+  if (reviews.length) {
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    averageRating = Number((totalRating / reviews.length).toFixed(2));
+  }
+
+  return {
+    totalOrders,
+    deliveredOrders,
+    cancelledOrders,
+    totalRevenue,
+    monthWiseOrders,
+    weekWiseOrders,
+    bestSellingProducts,
+    averageRating
+  };
+};
+
+const getAdminDashboardService = async () => {
+  const orders = await Order.find();
+
+  let totalOrders = orders.length;
+  let totalAmount = 0;
+  let totalProductsSold = 0;
+  let cancelledOrders = 0;
+  let deliveredOrders = 0;
+
+  let stateWiseCounts = {};
+
+  for (let order of orders) {
+
+    // Total amount
+    totalAmount += order.totalPrice || 0;
+
+    // Status counts
+    if (order.status === "Cancelled") {
+      cancelledOrders++;
+    }
+
+    if (order.status === "Delivered") {
+      deliveredOrders++;
+    }
+
+    // State wise count
+    if (order.state) {
+      if (!stateWiseCounts[order.state]) {
+        stateWiseCounts[order.state] = 0;
+      }
+      stateWiseCounts[order.state]++;
+    }
+
+    // Total products sold
+    totalProductsSold += order.totalQuantity || 0 
+  }
+
+  return {
+    totalOrders,
+    totalAmount,
+    totalProductsSold,
+    cancelledOrders,
+    deliveredOrders,
+    stateWiseCounts
+  };
+};
 export default {
   setCreateVendorVariables,
   setUpdateVendorVariables,
@@ -214,4 +486,8 @@ export default {
   validateFields,
   requriedFields,
   validateVendorBulkFields,
+  setUpdateProfilePath,
+  roleBasedOrdersProductsReviews,
+  getVendorDashboardService,
+  getAdminDashboardService
 };

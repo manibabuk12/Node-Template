@@ -1,9 +1,9 @@
 /**Models*/
-import vendorModel from '../models/vendor.model.js';
+import userModel from '../models/user.model.js';
 import roleModel from '../models/roles.model.js';
 import listPreferencesModel from '../models/listPreferences.model.js';
 /**Services*/
-import vendorService from '../services/vendor.service.js';
+import userService from '../services/user.service.js';
 import EmailService from '../services/email.service.js'
 import activityService from '../services/activity.service.js';
 import exportToCsvViewService from '../services/exportToCsvViews.service.js';
@@ -17,52 +17,52 @@ import config from '../config/config.js'
 import _ from 'lodash';
 
 
-const controller = "Vendor";
+const controller = "User";
 
 /**
- * Create new vendor
+ * Create new user
  * @param req
  * @param res
  * @returns { respCode: respCode, respMessage: respMessage }
  */
  async function register(req, res) {
-    logger.info('Log:Vendor Controller:register: body :' + JSON.stringify(req.body), controller);
+    logger.info('Log:User Controller:register: body :' + JSON.stringify(req.body), controller);
   
     await serviceUtil.checkPermission(req, res, "Edit", controller);
     if(req.body && req.body.email) req.body.email=req.body.email.toLowerCase()
-    let vendor = new vendorModel(req.body);
+    let user = new userModel(req.body);
   
     //check email exists or not
-    const uniqueEmail = await vendorModel.findUniqueEmail(vendor.email);
+    const uniqueEmail = await userModel.findUniqueEmail(user.email);
     if (uniqueEmail) {
       req.i18nKey = 'emailExists';
-      logger.error('Error:vendor Controller:register:' + i18nUtil.getI18nMessage('emailExists'), controller);
+      logger.error('Error:user Controller:register:' + i18nUtil.getI18nMessage('emailExists'), controller);
       return res.json(respUtil.getErrorResponse(req));
     }
-    let requiredFieldError = await vendorService.requriedFields(req)
+    let requiredFieldError = await userService.requriedFields(req)
     if(requiredFieldError){
       req.i18nKey = 'requriedField';
       return res.json(respUtil.getErrorResponse(req));
     }
     
     /*replace_*validateFieldData*/
-    vendor = await vendorService.setCreateVendorVariables(req, vendor)
+    user = await userService.setCreateUserVariables(req, user)
 
     /**@create ListPreference for individual login type */
-    let newListPreference = await new listPreferencesModel({columnOrder:config.columnOrder,vendorId:vendor._id});
+    let newListPreference = await new listPreferencesModel({columnOrder:config.columnOrder,userId:user._id});
     /**@Saving the ListPreference */
     let savedPreference = await listPreferencesModel.saveData(newListPreference);
-    /**@Assign that Preference to Vendor */
-    vendor.listPreferences = savedPreference._id;
+    /**@Assign that Preference to User */
+    user.listPreferences = savedPreference._id;
 
-    req.vendor = await vendorModel.saveData(vendor);
-    req.vendor.password = req.vendor.salt = undefined;
-    req.entityType = 'vendor';
-    req.activityKey = 'vendorRegister';``
+    req.user = await userModel.saveData(user);
+    req.user.password = req.user.salt = undefined;
+    req.entityType = 'user';
+    req.activityKey = 'userRegister';``
     activityService.insertActivity(req);
     if (req.body.email) {
     emailService.sendEmailviaGrid({
-        templateName: config.emailTemplates.vendorWelcome,
+        templateName: config.emailTemplates.userWelcome,
         entityType: sessionUtil.getLoginType(req),
         emailParams: {
             to: req.body.email
@@ -70,38 +70,38 @@ const controller = "Vendor";
         }
     });
 }
-    //send email to vendor
+    //send email to user
     // emailService.sendEmail(req, res);
     // let templateInfo = JSON.parse(JSON.stringify(config.mailSettings));
     // emailService.sendEmailviaGrid({
-    //   templateName: config.emailTemplates.vendorWelcome,
+    //   templateName: config.emailTemplates.userWelcome,
     //   emailParams: {
-    //     to: vendor.email,
-    //     displayName: vendor.displayName,
-    //     Id: req.vendor._id,
+    //     to: user.email,
+    //     displayName: user.displayName,
+    //     Id: req.user._id,
     //     link: templateInfo.adminUrl
     //   }
     // });
-    logger.info('Log:vendor Controller:register:' + i18nUtil.getI18nMessage('vendorCreate'), controller);
+    logger.info('Log:user Controller:register:' + i18nUtil.getI18nMessage('userCreate'), controller);
     return res.json(respUtil.createSuccessResponse(req));
   }
   
 /**
- *  auth-multiDelete vendor.
+ *  auth-multiDelete user.
  * @param req
  * @param res
  * @param next
  * @returns { respCode: respCode, respMessage: respMessage }
  */
 async function multidelete(req, res, next) {
-  logger.info('Log:Vendor Controller:multidelete: query,body :' + JSON.stringify(req.query, req.body));
+  logger.info('Log:User Controller:multidelete: query,body :' + JSON.stringify(req.query, req.body));
   await serviceUtil.checkPermission(req, res, "Edit", controller);
   if (req.body && req.body.selectedIds && req.body.selectedIds.length > 0) {
     const validation = await checkOwnRecordIdExists(req);
     if (validation.isError) {
       return res.json(respUtil.getErrorResponse(req));
     }
-    await vendorModel.updateMany(
+    await userModel.updateMany(
       { _id: { $in: req.body.selectedIds } },
       {
         $set: {
@@ -112,9 +112,9 @@ async function multidelete(req, res, next) {
       { multi: true }
     );
   }
-  req.entityType = 'vendor';
-  req.activityKey = 'vendorDelete';
-  // adding vendor delete activity
+  req.entityType = 'user';
+  req.activityKey = 'userDelete';
+  // adding user delete activity
   activityService.insertActivity(req);
   res.json(respUtil.removeSuccessResponse(req));
 };
@@ -135,32 +135,32 @@ async function checkOwnRecordIdExists(req) {
 }
 
 /**
- * Get vendor
+ * Get user
  * @param req
  * @param res
- * @returns {details: Vendor}
+ * @returns {details: User}
  */
 async function get(req, res) {
-  logger.info('Log:Vendor Controller:get: query :' + JSON.stringify(req.query));
+  logger.info('Log:User Controller:get: query :' + JSON.stringify(req.query));
   await serviceUtil.checkPermission(req, res, "View", controller);
   res.json({
-    details: req.vendor
+    details: req.user
   });
-}// import { Vendor } from "mocha";
+}// import { User } from "mocha";
 
 
 /**
- * Get vendor list. based on criteria
+ * Get user list. based on criteria
  * @param req
  * @param res
  * @param next
- * @returns {vendors: vendors, pagination: pagination}
+ * @returns {users: users, pagination: pagination}
  */
 async function list(req, res, next) {
-  let vendors
-  logger.info('Log:Vendor Controller:list: query :' + JSON.stringify(req.query));
+  let users
+  logger.info('Log:User Controller:list: query :' + JSON.stringify(req.query));
   await serviceUtil.checkPermission(req, res, "View", controller);
-  const query = await serviceUtil.generateListQuery(req,"vendor");  
+  const query = await serviceUtil.generateListQuery(req,"user");  
   // if (req.tokenInfo && req.tokenInfo._doc._id && req.tokenInfo._doc.role && req.tokenInfo._doc.role != 'Admin') {
   //   query.filter.createdBy = req.tokenInfo._id
   // }
@@ -169,7 +169,7 @@ async function list(req, res, next) {
     roleDetails = await roleModel.findOne({ role: req.tokenInfo._doc.role, active:true })
   }
   if (!req.query.searchFrom) {
-    if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc._id && roleDetails && roleDetails.roleType && roleDetails.roleType === "Vendor") {
+    if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc._id && roleDetails && roleDetails.roleType && roleDetails.roleType === "User") {
       // query.filter.createdBy = req.tokenInfo._doc._id
       query.filter["$or"] = [{ createdBy: { $in: [req.tokenInfo._doc._id] } }, ];
     } else if (req.tokenInfo && req.tokenInfo._doc && req.tokenInfo._doc._id && roleDetails && roleDetails.roleType && roleDetails.roleType === "Manager") {
@@ -179,7 +179,7 @@ async function list(req, res, next) {
         level = level - 1;
         let reportingMembersArray = [req.tokenInfo._doc._id]
         level = level - 1;
-        let reportingMembers = await vendorModel.find({ reportingTo: req.tokenInfo._doc._id }, { _id: 1 });
+        let reportingMembers = await userModel.find({ reportingTo: req.tokenInfo._doc._id }, { _id: 1 });
         for (let obj of reportingMembers) {
           reportingMembersArray.push(obj._id);
         }
@@ -187,7 +187,7 @@ async function list(req, res, next) {
           var flag = true
           while (flag) {
             if (reportingMembers && reportingMembers.length > 0) {
-              let value1 = await vendorService.getVendors(reportingMembers)
+              let value1 = await userService.getUsers(reportingMembers)
               reportingMembersArray = [...reportingMembersArray, ...value1];
               reportingMembers = JSON.parse(JSON.stringify(value1));
             } else {
@@ -202,25 +202,25 @@ async function list(req, res, next) {
           query.filter["$or"] = [{ reportingTo: { $in: reportingMembersArray } }, ];
         }
       } else {
-        // query.filter.reportingTo = req.tokenInfo._doc._id //ofor Vendor crud
+        // query.filter.reportingTo = req.tokenInfo._doc._id //ofor User crud
         query.filter["$or"] = [{ reportingTo: { $in: [req.tokenInfo._doc._id] } }, ];
       }
     }
   }
-  req.entityType = 'vendor';
+  req.entityType = 'user';
   query.dbfields = { password: 0, salt: 0, _v: 0 };
   if (req.query.type === 'exportToCsv') {
     query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
   }
 
-  vendors = await vendorModel.list(query);
+  users = await userModel.list(query);
   if (req.query.type === 'exportToCsv') {
-    vendors = await exportToCsvViewService.applyCsvHashingToActions(req, vendors);
+    users = await exportToCsvViewService.applyCsvHashingToActions(req, users);
   }
-  query.pagination.totalCount = await vendorModel.totalCount(query);
+  query.pagination.totalCount = await userModel.totalCount(query);
 
   res.json({
-    vendors: vendors,
+    users: users,
     pagination: query.pagination
   });
 }
@@ -228,43 +228,43 @@ async function list(req, res, next) {
 // Get wishlist
 async function getWishlist(req, res) {
   try {
-    await serviceUtil.checkPermission(req, res, "View", "Vendor");
+    await serviceUtil.checkPermission(req, res, "View", "User");
     
     // Use the ID from the token session
-    const vendor = await vendorModel.findById(req.tokenInfo._doc._id);
+    const user = await userModel.findById(req.tokenInfo._doc._id);
     
-    if (!vendor) {
-      req.i18nKey = "vendorNotFound";
+    if (!user) {
+      req.i18nKey = "userNotFound";
       return res.json(respUtil.getErrorResponse(req));
     }
  
     return res.json({
-      wishlist: vendor.wishList || []
+      wishlist: user.wishList || []
     });
   } catch (err) {
-    logger.error('Error:Vendor Controller:getWishlist: ' + err);
+    logger.error('Error:User Controller:getWishlist: ' + err);
     return res.json(respUtil.getErrorResponse(req));
   }
 }
  
 // Update product in wishlist 
 async function updateWishlist(req, res) {
-const vendorId = sessionUtil.getSessionLoginID(req)
+const userId = sessionUtil.getSessionLoginID(req)
 const {wishList} = req.body
  
-await vendorModel.updateOne({_id:vendorId},{$set: {wishList}})
+await userModel.updateOne({_id:userId},{$set: {wishList}})
 res.json(respUtil.successResponse("Wish List Updated Successfully"));
 }
 
 /**
- * Load vendor and append to req.
+ * Load user and append to req.
  * @param req
  * @param res
  * @param next
  */
 async function load(req, res, next) {
   try{
-    req.vendor = await vendorModel.get(req.params.vendorId);
+    req.user = await userModel.get(req.params.userId);
     return next();
   }catch(err){
     req.i18nKey="idNotFound"
@@ -273,55 +273,55 @@ async function load(req, res, next) {
 }
 
 /**
- * Create new vendor
+ * Create new user
  * @param req
  * @param res
  * @returns { respCode: respCode, respMessage: respMessage }
  */
 async function create(req, res) {
-  logger.info('Log:Vendor Controller:create: body :' + JSON.stringify(req.body), controller);
+  logger.info('Log:User Controller:create: body :' + JSON.stringify(req.body), controller);
 
   await serviceUtil.checkPermission(req, res, "Edit", controller);
   if(req.body && req.body.email) req.body.email=req.body.email.toLowerCase()
-  let vendor = new vendorModel(req.body);
-  let preCreateResult = await preCreate(vendor)
+  let user = new userModel(req.body);
+  let preCreateResult = await preCreate(user)
   //check email exists or not
-  const uniqueEmail = await vendorModel.findUniqueEmail(vendor.email);
+  const uniqueEmail = await userModel.findUniqueEmail(user.email);
   if (uniqueEmail) {
     req.i18nKey = 'emailExists';
-    logger.error('Error:vendor Controller:create:' + i18nUtil.getI18nMessage('emailExists'), controller);
+    logger.error('Error:user Controller:create:' + i18nUtil.getI18nMessage('emailExists'), controller);
     return res.json(respUtil.getErrorResponse(req));
   }
-  let requiredFieldError = await vendorService.requriedFields(req)
+  let requiredFieldError = await userService.requriedFields(req)
   if(requiredFieldError){
     req.i18nKey = 'requriedField';
     return res.json(respUtil.getErrorResponse(req));
   }
   
   
-  vendor = await vendorService.setCreateVendorVariables(req, vendor)
-  let validateRes = await vendorService.validateFields(req, req.body);
+  user = await userService.setCreateUserVariables(req, user)
+  let validateRes = await userService.validateFields(req, req.body);
               if(validateRes){
               return res.json(respUtil.getErrorResponse(req));
             }
 
   /**@create ListPreference for individual login type */
-  let newListPreference = await new listPreferencesModel({columnOrder:config.columnOrder,vendorId:vendor._id});
+  let newListPreference = await new listPreferencesModel({columnOrder:config.columnOrder,userId:user._id});
   /**@Saving the ListPreference */
   let savedPreference = await listPreferencesModel.saveData(newListPreference);
-  /**@Assign that Preference to Vendor */
-  vendor.listPreferences = savedPreference._id;
+  /**@Assign that Preference to User */
+  user.listPreferences = savedPreference._id;
 
-  let preSaveCreateResult = await preSaveCreate(vendor)
-  req.vendor = await vendorModel.saveData(vendor);
-  let postSaveCreateResult = await postSaveCreate(req.vendor)
-  req.vendor.password = req.vendor.salt = undefined;
-  req.entityType = 'vendor';
-  req.activityKey = 'vendorCreate';
+  let preSaveCreateResult = await preSaveCreate(user)
+  req.user = await userModel.saveData(user);
+  let postSaveCreateResult = await postSaveCreate(req.user)
+  req.user.password = req.user.salt = undefined;
+  req.entityType = 'user';
+  req.activityKey = 'userCreate';
   activityService.insertActivity(req);
   if (req.body.email) {
     emailService.sendEmailviaGrid({
-        templateName: config.emailTemplates.vendorCreate,
+        templateName: config.emailTemplates.userCreate,
         entityType: sessionUtil.getLoginType(req),
         emailParams: {
             to: req.body.email
@@ -329,77 +329,77 @@ async function create(req, res) {
         }
     });
 }
-  //send email to vendor
+  //send email to user
   // emailService.sendEmail(req, res);
   // let templateInfo = JSON.parse(JSON.stringify(config.mailSettings));
   // emailService.sendEmailviaGrid({
-  //   templateName: config.emailTemplates.vendorWelcome,
+  //   templateName: config.emailTemplates.userWelcome,
   //   emailParams: {
-  //     to: vendor.email,
-  //     displayName: vendor.displayName,
-  //     Id: req.vendor._id,
+  //     to: user.email,
+  //     displayName: user.displayName,
+  //     Id: req.user._id,
   //     link: templateInfo.adminUrl
   //   }
   // });
-  logger.info('Log:vendor Controller:create:' + i18nUtil.getI18nMessage('vendorCreate'), controller);
+  logger.info('Log:user Controller:create:' + i18nUtil.getI18nMessage('userCreate'), controller);
   return res.json(respUtil.createSuccessResponse(req));
 }
 
 
 /**
- * Update existing vendor
+ * Update existing user
  * @param req
  * @param res
  * @param next
  * @returns { respCode: respCode, respMessage: respMessage }
  */
 async function update(req, res, next) {
-  logger.info('Log:Vendor Controller:update: body :' + JSON.stringify(req.body));
+  logger.info('Log:User Controller:update: body :' + JSON.stringify(req.body));
   await serviceUtil.checkPermission(req, res, "Edit", controller);
-  let vendor = req.vendor;
-  let preUpdateResult = await preUpdate(vendor)
+  let user = req.user;
+  let preUpdateResult = await preUpdate(user)
   
-  req.description = await serviceUtil.compareObjects(vendor, req.body);
-  vendor = Object.assign(vendor, req.body);
-  // vendor = _.merge(vendor, req.body);
-  // vendor.set(req.body);
-  vendor = await vendorService.setUpdateVendorVariables(req, vendor);
-  let validateRes = await vendorService.validateFields(req, req.body);
+  req.description = await serviceUtil.compareObjects(user, req.body);
+  user = Object.assign(user, req.body);
+  // user = _.merge(user, req.body);
+  // user.set(req.body);
+  user = await userService.setUpdateUserVariables(req, user);
+  let validateRes = await userService.validateFields(req, req.body);
               if(validateRes){
               return res.json(respUtil.getErrorResponse(req));
             }
-  let preSaveUpdateResult = await preSaveUpdate(vendor)
-  req.vendor = await vendorModel.saveData(vendor);
-  let postSaveUpdateResult = await postSaveUpdate(req.vendor)
-  req.entityType = 'vendor';
-  req.activityKey = 'vendorUpdate';
+  let preSaveUpdateResult = await preSaveUpdate(user)
+  req.user = await userModel.saveData(user);
+  let postSaveUpdateResult = await postSaveUpdate(req.user)
+  req.entityType = 'user';
+  req.activityKey = 'userUpdate';
 
-  // adding vendor update activity
+  // adding user update activity
   activityService.insertActivity(req);
   res.json(respUtil.updateSuccessResponse(req));
 }
 
 /**
- * Delete vendor.
+ * Delete user.
  * @param req
  * @param res
  * @param next
  * @returns { respCode: respCode, respMessage: respMessage }
  */
 async function remove(req, res, next) {
-  logger.info('Log:Vendor Controller:remove: query :' + JSON.stringify(req.query));
+  logger.info('Log:User Controller:remove: query :' + JSON.stringify(req.query));
   await serviceUtil.checkPermission(req, res, "Edit", controller);
-  let vendor = req.vendor;
-  let preRemoveResult = await preRemove(vendor)
-  vendor.active = false;
-  vendor = await vendorService.setUpdateVendorVariables(req, vendor);
-  let preSaveRemoveResult = await preSaveRemove(vendor)
-  req.vendor = await vendorModel.saveData(vendor);
-  let postSaveRemoveResult = await postSaveRemove(req.vendor)
-  req.entityType = 'vendor';
-  req.activityKey = 'vendorDelete';
+  let user = req.user;
+  let preRemoveResult = await preRemove(user)
+  user.active = false;
+  user = await userService.setUpdateUserVariables(req, user);
+  let preSaveRemoveResult = await preSaveRemove(user)
+  req.user = await userModel.saveData(user);
+  let postSaveRemoveResult = await postSaveRemove(req.user)
+  req.entityType = 'user';
+  req.activityKey = 'userDelete';
 
-  // adding vendor delete activity
+  // adding user delete activity
   activityService.insertActivity(req);
   res.json(respUtil.removeSuccessResponse(req));
 };
@@ -411,17 +411,17 @@ async function remove(req, res, next) {
  * @param {*} next 
  */
 async function multiupdate(req,res,next){
-    logger.info('Log:Vendor Controller:multiupdate: query,body :' + JSON.stringify(req.body));
+    logger.info('Log:User Controller:multiupdate: query,body :' + JSON.stringify(req.body));
     await serviceUtil.checkPermission(req, res, "Edit", controller);
     if(req.body && req.body.selectedIds && req.body.selectedIds.length > 0  && req.body.updatedDetails){
-      await vendorModel.updateMany({ 
+      await userModel.updateMany({ 
         _id:{ $in : req.body.selectedIds }
         },
         { $set: req.body.updatedDetails }
       )
     }
-    req.entityType = 'vendor';
-    req.activityKey = 'vendorUpdate';
+    req.entityType = 'user';
+    req.activityKey = 'userUpdate';
     activityService.insertActivity(req);
     res.json(respUtil.updateSuccessResponse(req));
   }
@@ -429,7 +429,7 @@ async function multiupdate(req,res,next){
  const roleBasedOrdersProductsReviews = async (req, res) => {
   try {
 
-    const data = await vendorService.roleBasedOrdersProductsReviews(req);
+    const data = await userService.roleBasedOrdersProductsReviews(req);
 
     return res.status(200).json({
       success: true,
@@ -446,81 +446,39 @@ async function multiupdate(req,res,next){
     });
   }
 };
-
-
-const getVendorDashboard = async (req, res) => {
-  try {
-
-    const vendorId = req.tokenInfo.vendorId;
-
-    const dashboardData = await vendorService.getVendorDashboardService(vendorId);
-
-    return res.status(200).json({
-      success: true,
-      message: "Vendor dashboard fetched successfully",
-      data: dashboardData
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-const getAdminDashboard = async (req, res) => {
-  try {
-    const data = await vendorService.getAdminDashboardService();
-
-    res.status(200).json({
-      success: true,
-      message: "Admin dashboard data fetched successfully",
-      data
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
- const preCreate=async(vendor)=>{
+ const preCreate=async(user)=>{
     /**@Add Your custom Logic */
 }  
   
-const preSaveCreate=async(vendor)=>{
+const preSaveCreate=async(user)=>{
     /**@Add Your custom Logic */
 } 
   
-const postSaveCreate=async(vendor)=>{
+const postSaveCreate=async(user)=>{
     /**@Add Your custom Logic */
 }
-const preUpdate=async(vendor)=>{
+const preUpdate=async(user)=>{
     /**@Add Your custom Logic */
 }  
   
-const preSaveUpdate=async(vendor)=>{
+const preSaveUpdate=async(user)=>{
     /**@Add Your custom Logic */
 } 
   
-const postSaveUpdate=async(vendor)=>{
+const postSaveUpdate=async(user)=>{
     /**@Add Your custom Logic */
 }
-const preRemove=async(vendor)=>{
+const preRemove=async(user)=>{
     /**@Add Your custom Logic */
 }  
   
-const preSaveRemove=async(vendor)=>{
+const preSaveRemove=async(user)=>{
     /**@Add Your custom Logic */
 } 
   
-const postSaveRemove=async(vendor)=>{
+const postSaveRemove=async(user)=>{
     /**@Add Your custom Logic */
 }
 
 
-export default {register,multidelete,get,list,load,create,update,remove,multiupdate,
-  updateWishlist,getWishlist,roleBasedOrdersProductsReviews,getVendorDashboard, getAdminDashboard}
+export default {register,multidelete,get,list,load,create,update,remove,multiupdate,updateWishlist,getWishlist,roleBasedOrdersProductsReviews}

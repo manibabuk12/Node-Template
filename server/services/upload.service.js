@@ -12,6 +12,8 @@ import patientService from './patient.service'
     import taskService from '../services/task.service';
     import leaveService from '../services/leave.service';
     import agentService from './agent.service';
+    import userService from './user.service';
+    import vendorService from './vendor.service';
     
 /**
  * Storing Uploades file
@@ -79,6 +81,13 @@ if(validateFieldsResult.headersMatched) obj = await patientService.insertPatient
  else if (req.query.type === 'Agents') {
 validateFieldsResult = await agentService.validateAgentBulkFields(req, res);
 if(validateFieldsResult.headersMatched) obj = await agentService.insertAgentData(req, res);
+ }
+ else if (req.query.type === 'Users') {
+validateFieldsResult = await userService.validateUserBulkFields(req, res);
+if(validateFieldsResult.headersMatched) obj = await userService.insertUserData(req, res);
+ }else if (req.query.type === 'Vendors') {
+validateFieldsResult = await vendorService.validateVendorBulkFields(req, res);
+if(validateFieldsResult.headersMatched) obj = await userService.insertUserData(req, res);
  }
 else {
 req.i18nKey = "failedtoUpload";

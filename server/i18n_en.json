@@ -97,6 +97,9 @@
 "employeeCreate":"Employee created successfully.",
 "employeeUpdate":"Employee updated successfully.",
 "employeeRemove":"Employee removed successfully.",
+"userDelete":"User delete successfully.",
+"userCreate":"User created successfully.",
+"userRemove":"User removed successfully.",
 "projectDelete":"Project delete successfully.",
 "projectCreate":"Project created successfully.",
 "projectUpdate":"Project updated successfully.",
@@ -150,7 +153,21 @@
     "agentAlreadyExists": "Agent already exists.",
     "agentInactiveStatusMessage": "You are in inactive state. Please contact your customer service.",
     "agentUpload": "Agent logo uploded successfully.",
-    "agentWaStatusMessage": "You are in pending state. Please contact your customer service."
+    "agentWaStatusMessage": "You are in pending state. Please contact your customer service.",
+
+    "multipleReviewErr":"You are already added review",
+    "sameProductReviewErr":"You can review on your own produts only",
+    "ownUpdatePermissionErr":"You can update only your own records",
+    "updateLimitErr":"you can update only firstName, lastName, phoneNumber",
+
+    "vendorActivitiesCreate": "Vendor activity created successfully.",
+    "vendorActivitiesDelete": "Vendor activity deleted successfully.",
+    "vendorActivitiesUpdate": "Vendor activity updated successfully.",
+    "vendorAlreadyActivated": "Vendor already activated.",
+    "vendorAlreadyExists": "Vendor already exists.",
+    "vendorInactiveStatusMessage": "You are in inactive state. Please contact your customer service.",
+    "vendorUpload": "Vendor logo uploded successfully.",
+    "vendorWaStatusMessage": "You are in pending state. Please contact your customer service."
     
   }
 }

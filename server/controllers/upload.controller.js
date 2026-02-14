@@ -3,6 +3,8 @@ import Project from "../models/project.model";
 import Doctor from "../models/doctor.model.js";
 import Patient from "../models/patient.model.js";
 import Agent from "../models/agent.model.js"
+import User from "../models/user.model.js";
+import Vendor from "../models/vendor.model.js"
 
 /**Services*/
 import uploadeService from "../services/upload.service";
@@ -12,12 +14,15 @@ import employeeService from "../services/employee.service";
 import doctorService from "../services/doctor.service.js";
 import agentService from "../services/agent.service.js";
 import patientService from "../services/patient.service.js";
+import userService from "../services/user.service.js";
 /**Utils*/
 import i18nUtil from "../utils/i18n.util";
 import respUtil from "../utils/resp.util";
 import sessionUtil from "../utils/session.util";
 import serviceUtil from "../utils/service.util";
 import config from "../config/config";
+import vendorService from "../services/vendor.service.js";
+
 
 
 
@@ -48,6 +53,11 @@ async function upload(req, res, next) {
       req.details = await Patient.get(sessionUtil.getTokenInfo(req, "_id"));
     } else if (req.entityType === "agent") {
       req.details = await Patient.get(sessionUtil.getTokenInfo(req, "_id"));
+    }
+    else if (req.entityType === "user") {
+      req.details = await User.get(sessionUtil.getTokenInfo(req, "_id"));
+    }else if (req.entityType === "vendor") {
+      req.details = await Vendor.get(sessionUtil.getTokenInfo(req, "_id"));
     }
     else {
       req.i18nKey = "invalidLoginType";
@@ -80,6 +90,8 @@ async function upload(req, res, next) {
       await doctorService.setUpdateProfilePath(req,res);
       await patientService.setUpdateProfilePath(req,res);
       await agentService.setUpdateProfilePath(req,res);
+      await userService.setUpdateProfilePath(req,res);
+      await vendorService.setUpdateProfilePath(req,res);
 
       // req.details._doc.profile =  req.uploadFile[0].name;
       // console.log("upload controller========  req.details.profile ",req.details.profile);
@@ -98,6 +110,10 @@ async function upload(req, res, next) {
     }
     else if (req.entityType === "agent") {
       req.details = await Agent.get(sessionUtil.getTokenInfo(req, "_id"));
+    }else if (req.entityType === "user") {
+      req.details = await User.get(sessionUtil.getTokenInfo(req, "_id"));
+    }else if (req.entityType === "vendor") {
+      req.details = await Vendor.get(sessionUtil.getTokenInfo(req, "_id"));
     }
 
       req.entityType = `${req.entityType}`;

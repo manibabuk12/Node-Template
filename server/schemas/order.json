@@ -14,7 +14,8 @@
   "schema": {
   "productId": {
   "type": "String",
-  "required": true
+  "required": true,
+  "ref":"products"
   },
   "productName": {
   "type": "String",
@@ -46,7 +47,8 @@
   "userId": {
   "type": "String",
   "required": true,
-  "index": true
+  "index": true,
+  "ref":"Users"
   },
   "isAmountPaid": {
   "type": "Boolean",

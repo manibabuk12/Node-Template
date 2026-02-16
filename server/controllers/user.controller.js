@@ -249,11 +249,16 @@ async function getWishlist(req, res) {
  
 // Update product in wishlist 
 async function updateWishlist(req, res) {
+  try{
 const userId = sessionUtil.getSessionLoginID(req)
 const {wishList} = req.body
  
 await userModel.updateOne({_id:userId},{$set: {wishList}})
-res.json(respUtil.successResponse("Wish List Updated Successfully"));
+res.json({message:"Wish List Updated Successfully"});
+
+  }catch(error){
+    res.status(500).json({error:error.message});
+  }
 }
 
 /**

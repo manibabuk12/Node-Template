@@ -1,4 +1,5 @@
 import employeeModel from "../models/employee.model";
+import Order from "../models/order.model"
 
 import session from "../utils/session.util";
 import activityService from "./activity.service";
@@ -224,6 +225,139 @@ const setUpdateProfilePath = async(req,res)=>{
   await employeeModel.updateOne({_id:req.tokenInfo._id,active:true},{$set:{profile:req.uploadFile[0].name}})
 }
 
+const getAdminDashboardService = async () => {
+  const orders = await Order.find();
+
+  let totalOrders = orders.length;
+  let totalAmount = 0;
+  let totalProductsSold = 0;
+  let cancelledOrders = 0;
+  let deliveredOrders = 0;
+
+  let stateWiseCounts = {};
+
+  for (let order of orders) {
+
+    // Total amount
+    totalAmount += order.totalPrice || 0;
+
+    // Status counts
+    if (order.status === "Cancelled") {
+      cancelledOrders++;
+    }
+
+    if (order.status === "Delivered") {
+      deliveredOrders++;
+    }
+
+    // State wise count
+    if (order.state) {
+      if (!stateWiseCounts[order.state]) {
+        stateWiseCounts[order.state] = 0;
+      }
+      stateWiseCounts[order.state]++;
+    }
+
+    // Total products sold
+    totalProductsSold += order.totalQuantity || 0 
+  }
+
+  return {
+    totalOrders,
+    totalAmount,
+    totalProductsSold,
+    cancelledOrders,
+    deliveredOrders,
+    stateWiseCounts
+  };
+};
+ 
+// /**
+// * ADMIN DASHBOARD (Only Aggregations - One by One)
+// */
+ 
+// async function adminDashboardAgg() {
+ 
+// const stateWiseOrders = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: "$state",
+// totalOrders: { $sum: 1 }
+// }
+// }
+// ]
+// );
+ 
+// const totalOrders = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: null,
+// totalOrders: { $sum: 1 }
+// }
+// }
+// ]
+// );
+ 
+// const totalAmountSold = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: null,
+// totalAmount: { $sum: "$totalPrice" }
+// }
+// }
+// ]
+// );
+ 
+// const totalProductsSold = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: null,
+// totalProducts: { $sum: "$totalQuantity" }
+// }
+// }
+// ]
+// );
+ 
+// const cancelledOrders = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: null,
+// cancelledOrders: {
+// $sum: { $cond: [{ $eq: ["$status", "Cancelled"] }, 1, 0] }
+// }
+// }
+// }
+// ]
+// );
+ 
+// const deliveredOrders = await Order.aggregate(
+// [
+// {
+// $group: {
+// _id: null,
+// deliveredOrders: {
+// $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] }
+// }
+// }
+// }
+// ]
+// );
+// return {
+// stateWiseOrders,
+// totalOrders: totalOrders.length ? totalOrders[0].totalOrders : 0,
+// totalAmount: totalAmountSold.length ? totalAmountSold[0].totalAmount : 0,
+// totalProductsSold: totalProductsSold.length ? totalProductsSold[0].totalProducts : 0,
+// cancelledOrders: cancelledOrders.length ? cancelledOrders[0].cancelledOrders : 0,
+// deliveredOrders: deliveredOrders.length ? deliveredOrders[0].deliveredOrders : 0
+// };
+ 
+// }
+
 
 export default {
   setCreateEmployeeVariables,
@@ -233,5 +367,6 @@ export default {
   validateFields,
   requriedFields,
   validateEmployeeBulkFields,
-  setUpdateProfilePath
+  setUpdateProfilePath,
+  getAdminDashboardService
 };

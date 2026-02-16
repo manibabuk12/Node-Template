@@ -313,6 +313,60 @@ const roleBasedOrdersProductsReviews = async (req) => {
   return combined;
 };
 
+// async function userDashboardAgg(userId) {
+// const result = await Order.aggregate(
+// [
+// {
+// $match: {
+// active: true
+// }
+// },
+// {
+// $group: {
+// _id: "$userId",
+// totalOrders: {
+// $sum: 1
+// },
+// totalProductsPurchased: {
+// $sum: "$totalQuantity"
+// }
+// }
+// },
+// {
+// $lookup: {
+// from: "reviews",
+// localField: "_id",
+// foreignField: "userId",
+// as: "reviews"
+// }
+// },
+// {
+// $addFields: {
+// totalReviews: {
+// $size: "$reviews"
+// }
+// }
+// },
+// {
+// $project: {
+// totalOrders: 1,
+// totalProductsPurchased: 1,
+// totalReviews: 1
+// }
+// }
+// ]
+// );
+ 
+// return result[0] || {
+// totalOrders: 0,
+// totalProductsPurchased: 0,
+// totalReviews: 0
+// };
+// }
+ 
+
+
+
 export default {
   setCreateUserVariables,
   setUpdateUserVariables,

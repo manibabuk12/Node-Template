@@ -155,7 +155,7 @@ if(review){
 req.i18nKey = "multipleReviewErr";
 return isError
 }
-if (!order) {
+if (order) {
 req.i18nKey = "sameProductReviewErr";
 return isError
 }

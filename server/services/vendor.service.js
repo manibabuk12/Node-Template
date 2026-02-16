@@ -478,6 +478,85 @@ const getAdminDashboardService = async () => {
     stateWiseCounts
   };
 };
+
+/**
+* VENDOR DASHBOARD (Aggregation only)
+*/
+// async function vendorDashboardAgg(vendorObjectId) {
+// const vendorId = new mongoose.Types.ObjectId(vendorObjectId)
+// const monthWiseOrders = await Order.aggregate([
+// { $match: { active: true, createdBy: vendorId } },
+// {
+// $group: {
+// _id: { $month: "$created" },
+// totalOrders: { $sum: 1 }
+// }
+// },
+// { $sort: { _id: 1 } }
+// ]);
+ 
+// const weekWiseOrders = await Order.aggregate([
+// { $match: { active: true, createdBy: vendorId } },
+// {
+// $group: {
+// _id: { $week: "$created" },
+// totalOrders: { $sum: 1 }
+// }
+// },
+// { $sort: { _id: 1 } }
+// ]);
+ 
+// const bestSellingProducts = await Order.aggregate([
+// { $match: { active: true, createdBy: vendorId } },
+// { $unwind: "$products" },
+// { $unwind: "$products" },
+// {
+// $group: {
+// _id: "$products.productId",
+// productName: { $first: "$products.productName" },
+// totalSold: { $sum: "$products.quantity" }
+// }
+// },
+// { $sort: { totalSold: -1 } }
+// ]);
+ 
+// const orderStats = await Order.aggregate([
+// { $match: { createdBy: vendorId } },
+// {
+// $group: {
+// _id: null,
+// totalOrders: { $sum: 1 },
+// deliveredOrders: {
+// $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] }
+// },
+// cancelledOrders: {
+// $sum: { $cond: [{ $eq: ["$status", "Cancelled"] }, 1, 0] }
+// },
+// totalAmount: { $sum: "$totalPrice" }
+// }
+// }
+// ]);
+ 
+// const avgRating = await Review.aggregate([
+// {
+// $group: {
+// _id: null,
+// avgRating: { $avg: "$rating" }
+// }
+// }
+// ]);
+ 
+// return {
+// monthWiseOrders,
+// weekWiseOrders,
+// bestSellingProducts,
+// totalOrders: orderStats.length ? orderStats[0].totalOrders : 0,
+// deliveredOrders: orderStats.length ? orderStats[0].deliveredOrders : 0,
+// cancelledOrders: orderStats.length ? orderStats[0].cancelledOrders : 0,
+// totalAmount: orderStats.length ? orderStats[0].totalAmount : 0,
+// avgRating: avgRating.length ? avgRating[0].avgRating : 0
+// };
+// }
 export default {
   setCreateVendorVariables,
   setUpdateVendorVariables,

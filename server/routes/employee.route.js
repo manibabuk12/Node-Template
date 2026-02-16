@@ -10,6 +10,13 @@ const router = express.Router();router
   .all(authPolicy.isAllowed)
   /** POST /api/employees/employeeId - Delete employee records */
   .post(authorize("Edit", controller), asyncHandler(employeeCtrl.multiupdate));
+
+  router
+    .route("/adminDashboard")
+    .all(authPolicy.isAllowed)
+    /** POST /api/vendors/vendorId - Delete vendor records */
+    .get(authorize("View", controller), asyncHandler(employeeCtrl.getAdminDashboard));
+
 router
   .route("/register")
   /** POST /api/employees - Register new employees */

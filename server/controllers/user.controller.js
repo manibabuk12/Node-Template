@@ -238,7 +238,7 @@ async function getWishlist(req, res) {
       return res.json(respUtil.getErrorResponse(req));
     }
  
-    return res.json({
+    return res.json({success:true,
       wishlist: user.wishList || []
     });
   } catch (err) {

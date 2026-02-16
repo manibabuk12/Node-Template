@@ -396,6 +396,23 @@ async function multiupdate(req,res,next){
     res.json(respUtil.updateSuccessResponse(req));
   }
 
+  const getAdminDashboard = async (req, res) => {
+    try {
+      const data = await employeeService.getAdminDashboardService();
+  
+      res.status(200).json({
+        success: true,
+        message: "Admin dashboard data fetched successfully",
+        data
+      });
+  
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  };
  const preCreate=async(employee)=>{
     /**@Add Your custom Logic */
 }  
@@ -431,4 +448,4 @@ const postSaveRemove=async(employee)=>{
 }
 
 
-export default {register,multidelete,get,list,load,create,update,remove,multiupdate}
+export default {register,multidelete,get,list,load,create,update,remove,multiupdate, getAdminDashboard}

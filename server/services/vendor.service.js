@@ -342,14 +342,24 @@ export const getVendorDashboardService = async (vendorId) => {
 
   const productIdSet = new Set(productIds);
 
-  //  Get orders containing vendor products
-  const orders = await Order.find({
-    "products.productId": { $in: productIds }
-  }).lean();
 
-  let totalOrders = 0;
+  //  Get orders containing vendor products
+
+  const orders = await Order.find({active :true }).lean();
+  let myOrders = []
+  for(let order of orders){
+    let products = order.products 
+    let currentProductIds = products.map((product)=>{return product.productId})
+    let result = currentProductIds.find(id=>productIds.includes(id))
+    if(result){
+      myOrders.push(order)
+    }
+  } 
+
+  let totalOrders = orders.length;
   let deliveredOrders = 0;
   let cancelledOrders = 0;
+  let processingOrder = 0;
   let totalRevenue = 0;
 
   const monthWiseOrders = {};
@@ -358,45 +368,33 @@ export const getVendorDashboardService = async (vendorId) => {
 
   for (const order of orders) {
 
-    let vendorProductFound = false;
+    if(order.status === "Delivered"){
+      deliveredOrders++;
+    }else if(order.status === "Cancelled"){
+      cancelledOrders++;
+    }else{
+      processingOrder++;
+    }
 
-    for (const product of order.products) {
+    totalRevenue += order.totalPrice;
 
-      if (productIdSet.has(product.productId)) {
+    if(order.deliveryDate){
+      const date = new Date(order.deliveryDate);
 
-        vendorProductFound = true;
+      const month = date.toLocaleString("default",{month:"short"});
+      monthWiseOrders[month] = (monthWiseOrders[month]||0)+1;
 
-        // Revenue (only Delivered)
-        if (order.status === "Delivered") {
-          totalRevenue += product.total;
-        }
+      const weekNumber = Math.ceil(date.getDate()/7);
+      const weekKey = `Week ${weekNumber}`;
+      weekWiseOrders[weekKey] = (weekWiseOrders[weekKey] || 0)+1;
+    }
 
-        // Best selling
-        productSales[product.productId] =
-          (productSales[product.productId] || 0) + product.quantity;
+    for(const product of order.products){
+      if(productIdSet.has(product.productId)){
+        productSales[product.productId] = (productSales[product.productId] || 0)+product.quantity;
       }
     }
 
-    if (vendorProductFound) {
-
-      totalOrders++;
-
-      if (order.status === "Delivered") deliveredOrders++;
-      if (order.status === "Cancelled") cancelledOrders++;
-
-      const date = new Date(order.created);
-
-      // Month-wise
-      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      monthWiseOrders[monthKey] =
-        (monthWiseOrders[monthKey] || 0) + 1;
-
-      // Week-wise (week of month)
-      const week = Math.ceil(date.getDate() / 7);
-      const weekKey = `${monthKey}-W${week}`;
-      weekWiseOrders[weekKey] =
-        (weekWiseOrders[weekKey] || 0) + 1;
-    }
   }
 
   // Best Selling Products (sorted)
@@ -425,6 +423,7 @@ export const getVendorDashboardService = async (vendorId) => {
     deliveredOrders,
     cancelledOrders,
     totalRevenue,
+    processingOrder,
     monthWiseOrders,
     weekWiseOrders,
     bestSellingProducts,
@@ -432,52 +431,6 @@ export const getVendorDashboardService = async (vendorId) => {
   };
 };
 
-const getAdminDashboardService = async () => {
-  const orders = await Order.find();
-
-  let totalOrders = orders.length;
-  let totalAmount = 0;
-  let totalProductsSold = 0;
-  let cancelledOrders = 0;
-  let deliveredOrders = 0;
-
-  let stateWiseCounts = {};
-
-  for (let order of orders) {
-
-    // Total amount
-    totalAmount += order.totalPrice || 0;
-
-    // Status counts
-    if (order.status === "Cancelled") {
-      cancelledOrders++;
-    }
-
-    if (order.status === "Delivered") {
-      deliveredOrders++;
-    }
-
-    // State wise count
-    if (order.state) {
-      if (!stateWiseCounts[order.state]) {
-        stateWiseCounts[order.state] = 0;
-      }
-      stateWiseCounts[order.state]++;
-    }
-
-    // Total products sold
-    totalProductsSold += order.totalQuantity || 0 
-  }
-
-  return {
-    totalOrders,
-    totalAmount,
-    totalProductsSold,
-    cancelledOrders,
-    deliveredOrders,
-    stateWiseCounts
-  };
-};
 
 /**
 * VENDOR DASHBOARD (Aggregation only)
@@ -567,6 +520,5 @@ export default {
   validateVendorBulkFields,
   setUpdateProfilePath,
   roleBasedOrdersProductsReviews,
-  getVendorDashboardService,
-  getAdminDashboardService
+  getVendorDashboardService
 };

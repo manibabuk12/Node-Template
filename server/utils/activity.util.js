@@ -663,49 +663,49 @@ taskDelete : {
 
 ,
 hospitalMultidelete : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'MULTIDELETE',
-    desc: 'Task Multideleted',
+    desc: 'Hospital Multideleted',
     key: '194'
 }
 
 ,
 hospitalGet : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'GET',
-    desc: 'Task Getd',
+    desc: 'Hospital Getd',
     key: '195'
 }
 
 ,
 hospitalList : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'LIST',
-    desc: 'Task Listd',
+    desc: 'Hospital Listd',
     key: '196'
 }
 
 ,
 hospitalCreate : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'CREATE',
-    desc: 'Task Created',
+    desc: 'Hospital Created',
     key: '197'
 }
 
 ,
 hospitalUpdate : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'UPDATE',
-    desc: 'Task Updated',
+    desc: 'Hospital Updated',
     key: '198'
 }
 
 ,
 hospitalDelete : {
-    context: 'TASK',
+    context: 'HOSPITAL',
     contextType: 'REMOVE',
-    desc: 'Task Removed',
+    desc: 'Hospital Removed',
     key: '199'
 }
 
@@ -1273,11 +1273,54 @@ constituencyDelete : {
     key: '273'
 },
 
-userRegister : {
+userCreate: {
+      context: 'USER',
+      contextType: 'CREATE',
+      desc: 'User created',
+      key: '274'
+    },
+    userUpdate: {
+      context: 'USER',
+      contextType: 'UPDATE',
+      desc: 'User Updated',
+      key: '275'
+    },
+    userDelete: {
+      context: 'USER',
+      contextType: 'DELETE',
+      desc: 'User deleted',
+      key: '276'
+    },
+    userLogoutSuccess: {
+      context: 'USER',
+      contextType: 'LOGOUT',
+      desc: 'User logout',
+      key: '277'
+    },
+    userLoginSuccess: {
+      context: 'USER',
+      contextType: 'LOGIN',
+      desc: 'User login',
+      key: '278'
+    },
+    userChangePassword: {
+      context: 'USER',
+      contextType: 'CHANGEPASSWORD',
+      desc: 'User CHANGEPASSWORD',
+      key: '279'
+    },
+    userForgotPassword: {
+      context: 'USER',
+      contextType: 'FORGOTPASSWORD',
+      desc: 'User FORGOTPASSWORD',
+      key: '280'
+    },
+
+    userRegister : {
     context: 'USER',
     contextType: 'REGISTER',
     desc: 'User Registerd',
-    key: '274'
+    key: '281'
 }
 
 ,
@@ -1285,7 +1328,7 @@ userMultidelete : {
     context: 'USER',
     contextType: 'MULTIDELETE',
     desc: 'User Multideleted',
-    key: '275'
+    key: '282'
 }
 
 ,
@@ -1293,7 +1336,7 @@ userGet : {
     context: 'USER',
     contextType: 'GET',
     desc: 'User Getd',
-    key: '276'
+    key: '283'
 }
 
 ,
@@ -1301,15 +1344,15 @@ userList : {
     context: 'USER',
     contextType: 'LIST',
     desc: 'User Listd',
-    key: '277'
+    key: '284'
 }
 
 ,
 userCreate : {
-    context: 'EMPLOYEE',
+    context: 'USER',
     contextType: 'CREATE',
     desc: 'User Created',
-    key: '278'
+    key: '285'
 }
 
 ,
@@ -1317,7 +1360,7 @@ userUpdate : {
     context: 'USER',
     contextType: 'UPDATE',
     desc: 'User Updated',
-    key: '279'
+    key: '286'
 }
 
 ,
@@ -1325,7 +1368,7 @@ userDelete : {
     context: 'USER',
     contextType: 'REMOVE',
     desc: 'User Removed',
-    key: '280'
+    key: '287'
 }
 
 ,
@@ -1333,7 +1376,7 @@ userLoginSuccess : {
     context: 'USER',
     contextType: 'LOGINSUCCESS',
     desc: 'User LoginSuccessd',
-    key: '281'
+    key: '288'
 }
 
 ,
@@ -1341,7 +1384,7 @@ userChangePassword : {
     context: 'USER',
     contextType: 'CHANGEPASSWORD',
     desc: 'User ChangePasswordd',
-    key: '282'
+    key: '289'
 }
 
 ,
@@ -1349,7 +1392,7 @@ userForgotPassword : {
     context: 'USER',
     contextType: 'FORGOTPASSWORD',
     desc: 'User ForgotPasswordd',
-    key: '283'
+    key: '290'
 }
 
 ,
@@ -1357,7 +1400,7 @@ userLogoutSuccess : {
     context: 'USER',
     contextType: 'LOGOUTSUCCESS',
     desc: 'User LogoutSuccessd',
-    key: '284'
+    key: '291'
 }
 
 ,
@@ -1365,104 +1408,151 @@ userRegister : {
     context: 'USER',
     contextType: 'REGISTER',
     desc: 'User Registerd',
-    key: '285'
-},
-
-vendorRegister : {
-    context: 'USER',
-    contextType: 'REGISTER',
-    desc: 'User Registerd',
-    key: '286'
-}
-
-,
-vendorMultidelete : {
-    context: 'USER',
-    contextType: 'MULTIDELETE',
-    desc: 'User Multideleted',
-    key: '287'
-}
-
-,
-vendorGet : {
-    context: 'USER',
-    contextType: 'GET',
-    desc: 'User Getd',
-    key: '288'
-}
-
-,
-vendorList : {
-    context: 'USER',
-    contextType: 'LIST',
-    desc: 'User Listd',
-    key: '289'
-}
-
-,
-vendorCreate : {
-    context: 'EMPLOYEE',
-    contextType: 'CREATE',
-    desc: 'User Created',
-    key: '290'
-}
-
-,
-vendorUpdate : {
-    context: 'USER',
-    contextType: 'UPDATE',
-    desc: 'User Updated',
-    key: '291'
-}
-
-,
-vendorDelete : {
-    context: 'USER',
-    contextType: 'REMOVE',
-    desc: 'User Removed',
     key: '292'
 }
 
 ,
-vendorLoginSuccess : {
-    context: 'USER',
-    contextType: 'LOGINSUCCESS',
-    desc: 'User LoginSuccessd',
+
+orderMultidelete : {
+    context: 'ORDER',
+    contextType: 'MULTIDELETE',
+    desc: 'Order Multideleted',
     key: '293'
 }
 
 ,
-vendorChangePassword : {
-    context: 'USER',
-    contextType: 'CHANGEPASSWORD',
-    desc: 'User ChangePasswordd',
+orderGet : {
+    context: 'ORDER',
+    contextType: 'GET',
+    desc: 'Order Getd',
     key: '294'
 }
 
 ,
-vendorForgotPassword : {
-    context: 'USER',
-    contextType: 'FORGOTPASSWORD',
-    desc: 'User ForgotPasswordd',
+orderList : {
+    context: 'ORDER',
+    contextType: 'LIST',
+    desc: 'Order Listd',
     key: '295'
 }
 
 ,
-vendorLogoutSuccess : {
-    context: 'USER',
-    contextType: 'LOGOUTSUCCESS',
-    desc: 'User LogoutSuccessd',
+orderCreate : {
+    context: 'ORDER',
+    contextType: 'CREATE',
+    desc: 'Order Created',
     key: '296'
 }
 
 ,
-vendorRegister : {
-    context: 'USER',
-    contextType: 'REGISTER',
-    desc: 'User Registerd',
+orderUpdate : {
+    context: 'ORDER',
+    contextType: 'UPDATE',
+    desc: 'Order Updated',
     key: '297'
 }
 
+,
+orderDelete : {
+    context: 'ORDER',
+    contextType: 'REMOVE',
+    desc: 'Order Removed',
+    key: '298'
+},
+
+productMultidelete : {
+    context: 'PRODUCT',
+    contextType: 'MULTIDELETE',
+    desc: 'Product Multideleted',
+    key: '299'
+}
+
+,
+productGet : {
+    context: 'PRODUCT',
+    contextType: 'GET',
+    desc: 'Product Getd',
+    key: '300'
+}
+
+,
+productList : {
+    context: 'PRODUCT',
+    contextType: 'LIST',
+    desc: 'Product Listd',
+    key: '301'
+}
+
+,
+productCreate : {
+    context: 'PRODUCT',
+    contextType: 'CREATE',
+    desc: 'Product Created',
+    key: '302'
+}
+
+,
+productUpdate : {
+    context: 'PRODUCT',
+    contextType: 'UPDATE',
+    desc: 'Product Updated',
+    key: '303'
+}
+
+,
+productDelete : {
+    context: 'PRODUCT',
+    contextType: 'REMOVE',
+    desc: 'Product Removed',
+    key: '304'
+},
+
+reviewMultidelete : {
+    context: 'REVIEW',
+    contextType: 'MULTIDELETE',
+    desc: 'Review Multideleted',
+    key: '305'
+}
+
+,
+reviewGet : {
+    context: 'REVIEW',
+    contextType: 'GET',
+    desc: 'Review Getd',
+    key: '306'
+}
+
+,
+reviewList : {
+    context: 'REVIEW',
+    contextType: 'LIST',
+    desc: 'Review Listd',
+    key: '307'
+}
+
+,
+reviewCreate : {
+    context: 'REVIEW',
+    contextType: 'CREATE',
+    desc: 'Review Created',
+    key: '308'
+}
+
+,
+reviewUpdate : {
+    context: 'REVIEW',
+    contextType: 'UPDATE',
+    desc: 'Review Updated',
+    key: '309'
+}
+
+,
+reviewDelete : {
+    context: 'REVIEW',
+    contextType: 'REMOVE',
+    desc: 'Review Removed',
+    key: '310'
+}
   },
 };
 

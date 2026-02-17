@@ -28,17 +28,11 @@ const router = express.Router();
   /** POST /api/vendors/vendorId - Delete vendor records */
   .get(authorize("View", controller), asyncHandler(vendorCtrl.roleBasedOrdersProductsReviews));
 
- router
-  .route("/dashboard")
-  .all(authPolicy.isAllowed)
-  /** POST /api/vendors/vendorId - Delete vendor records */
-  .get(authorize("View", controller), asyncHandler(vendorCtrl.getVendorDashboard));
-
   router
-  .route("/adminDashboard")
+  .route("/vendorDashboard")
   .all(authPolicy.isAllowed)
-  /** POST /api/vendors/vendorId - Delete vendor records */
-  .get(authorize("View", controller), asyncHandler(vendorCtrl.getAdminDashboard));
+  /** POST /api/vendors/vendorId - vendor records */
+  .get(authorize("View", controller), asyncHandler(vendorCtrl.getVendorDashboard));
 
 router
   .route("/multiUpdate")

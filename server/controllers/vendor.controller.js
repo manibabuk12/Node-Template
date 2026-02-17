@@ -469,24 +469,6 @@ const getVendorDashboard = async (req, res) => {
   }
 };
 
-const getAdminDashboard = async (req, res) => {
-  try {
-    const data = await vendorService.getAdminDashboardService();
-
-    res.status(200).json({
-      success: true,
-      message: "Admin dashboard data fetched successfully",
-      data
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
  const preCreate=async(vendor)=>{
     /**@Add Your custom Logic */
 }  
@@ -523,4 +505,4 @@ const postSaveRemove=async(vendor)=>{
 
 
 export default {register,multidelete,get,list,load,create,update,remove,multiupdate,
-  updateWishlist,getWishlist,roleBasedOrdersProductsReviews,getVendorDashboard, getAdminDashboard}
+  updateWishlist,getWishlist,roleBasedOrdersProductsReviews,getVendorDashboard}

@@ -145,7 +145,7 @@ async function list(req, res, next) {
     query.limit = (query.pagination.totalCount>200) ? 200 : query.pagination.totalCount
   }
 
-  if(!roleDetails || roleDetails.roleType !== "Admin"){
+  if(!roleDetails || roleDetails.roleType === "user"){
     query.filter.dateOfExpiry = {$gte: new Date()};
   }
   products = await productModel.list(query); // textLowerCasePlural
